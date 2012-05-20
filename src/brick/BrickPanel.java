@@ -11,6 +11,7 @@ public class BrickPanel extends JPanel {
 	private World world;
 	private FrameBuffer buffer;
 	private ArrayList<BrickObject> objs;
+	protected AdjustmentPane ap;
 	
 	public BrickPanel() {
 		super();
@@ -18,6 +19,7 @@ public class BrickPanel extends JPanel {
 		world.setAmbientLight(0, 0, 0);
 		buffer = new FrameBuffer(800, 600, FrameBuffer.SAMPLINGMODE_NORMAL);
 		objs = new ArrayList<BrickObject>();
+		ap = new AdjustmentPane(world, this);
 	}
 	
 	public void addObject(BrickObject obj) {
@@ -43,6 +45,7 @@ public class BrickPanel extends JPanel {
 	
 	@Override
 	protected void paintComponent(Graphics g) {
+		System.out.println(objs.size());
 		for (BrickObject obj: objs) {
 			obj.adjustColor();
 		}
@@ -51,6 +54,7 @@ public class BrickPanel extends JPanel {
 		world.draw(buffer);
 		buffer.update();
 		buffer.display(g);
+		ap.update();
 	}
 	
 	public void dispose() {
