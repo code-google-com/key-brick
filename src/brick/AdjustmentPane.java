@@ -14,6 +14,8 @@ import com.threed.jpct.World;
 public class AdjustmentPane extends JPanel {
 	private BrickObject chosen;
 	private int numBricks = 0;
+	//Misleading name: Actually number of objects in total, not just bricks.
+	
 	private World world;
 	private BrickPanel ra;
 	private JTextField xpos, ypos, zpos;
@@ -181,7 +183,7 @@ public class AdjustmentPane extends JPanel {
 		private void setObjectVal(int i){
 			int t = Integer.parseInt(val.getText());
 			if(t <= 0 && i < 0) val.setText("0");
-			else if(t >= numBricks-1 && i > 0) val.setText("" + numBricks);
+			else if(t >= numBricks-1 && i > 0) val.setText("" + (numBricks - 1));
 			else val.setText(Integer.toString(Integer.parseInt(val.getText()) + i));
 		}
 	}

@@ -23,10 +23,12 @@ public class BrickPanel extends JPanel {
 	}
 	
 	public void addObject(BrickObject obj) {
-		System.out.println("Called");
 		world.addObject(obj);
-		objs.add(obj);
 		obj.setCulling(Object3D.CULLING_DISABLED);
+	}
+	
+	public void addBrick(BrickObject brick){
+		objs.add(brick);
 	}
 	
 	public int numObjs(){
@@ -44,9 +46,10 @@ public class BrickPanel extends JPanel {
 	public void buildAll() {
 		world.buildAllObjects();
 		//Camera cam = world.getCamera();
-		world.getCamera().setPosition(0, -50, 0);
-		//cam.
-		world.getCamera().lookAt(new SimpleVector(0, 1, 0));//getMostRecent().getTransformedCenter());
+//		world.getCamera().setPosition(0, -50, 0);
+//		world.getCamera().lookAt(new SimpleVector(0, 1, 0));//getMostRecent().getTransformedCenter());
+		world.getCamera().setPosition(-100.0f, 0, 0);
+		world.getCamera().lookAt(new SimpleVector(1f, 0, 0));//getMostRecent().getTransformedCenter());
 		
 	}
 	
@@ -54,11 +57,13 @@ public class BrickPanel extends JPanel {
 		return Interact2D.project3D2D(world.getCamera(), buffer, point3D);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void paintComponent(Graphics g) {
 		System.out.println(objs.size());
-		for (BrickObject obj: objs) {
-			obj.adjustColor();
+		//This reeeeally makes Java unhappy.
+		for (Enumeration<BrickObject> bricks = world.getObjects(); bricks.hasMoreElements();) {
+			bricks.nextElement().adjustColor();
 		}
 		buffer.clear(Color.BLUE);
 		world.renderScene(buffer);

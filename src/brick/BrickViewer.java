@@ -32,6 +32,7 @@ public class BrickViewer extends JFrame {
 		BrickPanel bp = new BrickPanel();
 		getContentPane().add(bp);
 		BrickObject obj = model.toBrickObject(new Matrix(), bp);
+		bp.addBrick(obj);
 		obj.setColorCode(2);
 		bp.buildAll();
 		addKeyListener(new BrickKeyController(obj, (float)Math.PI/48, bp));

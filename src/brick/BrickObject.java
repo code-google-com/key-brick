@@ -37,7 +37,7 @@ public class BrickObject extends Object3D {
 	}
 	
 	public int findColor() {
-		if (debug) {System.out.println("findColor() for " + getName());}
+		//if (debug) {System.out.println("findColor() for " + getName());}
 		if (colorCode != MAIN_COLOR && colorCode != EDGE_COLOR) {
 			if (debug) {System.out.println(" Returning " + colorCode);}
 			return colorCode;
