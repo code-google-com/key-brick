@@ -21,12 +21,14 @@ public class AdjustmentPane extends JPanel {
 	private JTextField xpos, ypos, zpos;
 	private JTextField xrot, yrot, zrot;
 	private JTextField obj, objx, objy, objz;
+	private int lastColor = 2;
 	
 	public AdjustmentPane(World w, BrickPanel renderingArea){
 		super();
 		world = w;
 		ra = renderingArea;
 		
+		//Camera position indicators
 		xpos = new JTextField(5);
 		xpos.addKeyListener(new FieldListener(xpos, this));
 		ypos = new JTextField(5);
@@ -34,6 +36,8 @@ public class AdjustmentPane extends JPanel {
 		zpos = new JTextField(5);
 		zpos.addKeyListener(new FieldListener(zpos, this));
 		
+		//Camera direction indicators
+		//That is, these three form the vector that points in the same direction as the camera
 		xrot = new JTextField(5);
 		xrot.addKeyListener(new FieldListener(xrot, this));
 		yrot = new JTextField(5);
@@ -41,6 +45,7 @@ public class AdjustmentPane extends JPanel {
 		zrot = new JTextField(5);
 		zrot.addKeyListener(new FieldListener(zrot, this));
 		
+		//Selected object indicators (index in objs, then position)
 		obj = new JTextField(5);
 		obj.addKeyListener(new FieldListener(obj, this));
 		objx = new JTextField(5);
@@ -80,9 +85,11 @@ public class AdjustmentPane extends JPanel {
 		int val = Integer.parseInt(obj.getText());
 		if(val >= numBricks) val = numBricks - 1;
 		if(numBricks != 0){
-			if(chosen != null) chosen.setColorCode(2);
+			
+			if(chosen != null) chosen.setColorCode(lastColor);
 			chosen = ra.getObject(val);
-			chosen.setColorCode(5);
+			lastColor = chosen.findColor();
+			chosen.setColorCode(6);
 		
 			SimpleVector objTrans = chosen.getTranslation();
 		
@@ -124,18 +131,23 @@ public class AdjustmentPane extends JPanel {
 		return Integer.parseInt(obj.getText());
 	}
 	
+	public void updateSelectedObject(BrickObject brick){
+		obj.setText("" + ra.indexOf(brick));
+		update();
+		updateCamera();
+	}
 	
 	public void updateCamera(){
 		//SimpleVector newRot = new SimpleVector(getXRot(), getYRot(), getZRot());
 		SimpleVector camPos = new SimpleVector(getXPos(), getYPos(), getZPos());
 		world.getCamera().setPosition(camPos);
-		System.out.println("Updated Camera.");
+		//System.out.println("Updated Camera.");
 		
 		SimpleVector curTrans = chosen.getTranslation();
 		SimpleVector posDelta = new SimpleVector(getObjX() - curTrans.x, getObjY() - curTrans.y, getObjZ() - curTrans.z);
 		chosen.translate(posDelta);
 		ra.repaint();
-		System.out.println("Updated Object" + getObj() +  ".");
+		//System.out.println("Updated Object " + getObj() +  ".");
 	}
 	
 	private class FieldListener extends KeyAdapter{

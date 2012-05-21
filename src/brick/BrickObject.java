@@ -1,6 +1,7 @@
 package brick;
 
 import com.threed.jpct.*;
+
 import java.awt.Color;
 
 @SuppressWarnings("serial")
@@ -18,6 +19,7 @@ public class BrickObject extends Object3D {
 		world.addObject(this);
 		this.colors = colors;
 		this.name = name;
+		setCollisionMode(Object3D.COLLISION_CHECK_OTHERS);
 	}
 	
 	public BrickObject(int triangles, BrickPanel world, ColorBase colors, String name) {
@@ -49,5 +51,19 @@ public class BrickObject extends Object3D {
 	public void adjustColor() {
 		Color c = colorCode == EDGE_COLOR ? colors.getEdgeColor(findColor()) : colors.getColor(findColor());
 		setAdditionalColor(c);
+	}
+	
+	
+	//Basic translation stuff for now, ignoring any sort of relative positions.
+	public void translateX(float f){
+		translate(new SimpleVector(f, 0, 0));
+	}
+	
+	public void translateY(float f){
+		translate(new SimpleVector(0, f, 0));
+	}
+	
+	public void translateZ(float f){
+		translate(new SimpleVector(0, 0, f));
 	}
 }

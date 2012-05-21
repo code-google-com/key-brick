@@ -31,16 +31,10 @@ public class PartSpec implements BrickSpec {
 	
 	public BrickObject toBrickObject(Matrix transformation, BrickPanel world) {
 		BrickObject result = new BrickObject(0, world, colors, name);
-		System.out.println();
 		for (BrickSpec l: lines) {
 			if (!l.isCommment()) {
 				result.addChild(l.toBrickObject(transformation, world));
 			}
-		}
-		Object3D[] pars = result.getParents();
-		System.out.println(result.getName() + " Parents: ");
-		for(Object3D p : pars){
-			System.out.println("\t" + p.getName());
 		}
 		return result;
 	}

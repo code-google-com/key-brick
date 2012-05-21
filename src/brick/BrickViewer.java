@@ -10,6 +10,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.threed.jpct.Config;
 import com.threed.jpct.Matrix;
+import com.threed.jpct.Object3D;
+import com.threed.jpct.SimpleVector;
 
 
 @SuppressWarnings("serial")
@@ -31,11 +33,26 @@ public class BrickViewer extends JFrame {
 		
 		BrickPanel bp = new BrickPanel();
 		getContentPane().add(bp);
+		
+		//Make two of the same brick
 		BrickObject obj = model.toBrickObject(new Matrix(), bp);
 		bp.addBrick(obj);
+		BrickObject obj2 = model.toBrickObject(new Matrix(), bp);
+		bp.addBrick(obj2);
+		//Put them side by side.
+		obj.translateZ(-20f);
+		obj2.translateZ(20f);
+		//Make them different colors.
 		obj.setColorCode(2);
+		obj2.setColorCode(1);
+		//Make them clickable.
+		//obj.setCollisionMode(Object3D.COLLISION_CHECK_OTHERS);
+		//obj2.setCollisionMode(Object3D.COLLISION_CHECK_OTHERS);
+		
+		
+		bp.setSelectedBrick(obj);
 		bp.buildAll();
-		addKeyListener(new BrickKeyController(obj, (float)Math.PI/48, bp));
+		addKeyListener(new BrickKeyController((float)Math.PI/4, bp));
 		helper = new JFrame();
 		helper.add(bp.ap);
 		helper.setSize(400, 150);
