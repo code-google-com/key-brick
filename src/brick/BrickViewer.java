@@ -17,7 +17,7 @@ import com.threed.jpct.SimpleVector;
 @SuppressWarnings("serial")
 public class BrickViewer extends JFrame {
 	//private final static String myPath = "~/books/robotics";
-	private final static String ldrawPath = "C:\\Program Files (x86)\\LDraw";
+	public final static String ldrawPath = "C:\\Program Files (x86)\\LDraw";
 	private final JFrame helper;
 	
 	public BrickViewer(String filename) throws PartNotFoundException, FileNotFoundException {

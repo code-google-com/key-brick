@@ -14,6 +14,7 @@ public class BrickObject extends Object3D {
 	private int colorCode;
 	private ColorBase colors;
 	private String name;
+	private boolean grouped = false;
 	
 	private void init(BrickPanel world, ColorBase colors, String name) {
 		world.addObject(this);
@@ -36,6 +37,28 @@ public class BrickObject extends Object3D {
 	
 	public void setColorCode(int color) {
 		colorCode = color;
+	}
+	
+	private void setGrouped(boolean b){
+		grouped = b;
+	}
+	
+	public void addChild(BrickObject child){
+		super.addChild((Object3D)child);
+		if(!this.equals(child)) child.setGrouped(true);
+	}
+	public void removeChild(BrickObject child){
+		super.removeChild((Object3D)child);
+		if(child.getParents().length == 0) child.setGrouped(false);
+	}
+	
+	public void addParent(BrickObject parent){
+		super.addParent((Object3D)parent);
+		if(!this.equals(parent)) setGrouped(true);
+	}
+	public void removeParent(BrickObject parent){
+		super.removeParent((Object3D)parent);
+		if(getParents().length == 0) setGrouped(false);
 	}
 	
 	public int findColor() {

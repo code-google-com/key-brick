@@ -49,3 +49,13 @@ I'm going to try putting a dummy object at the center of rotation, and maybe use
 So I worked til about 6:00 and got distracted. What I've done since then amounts to figuring out that this is a rather difficult problem. At the moment, my solution is to do what a different program I use does: Linking larger objects together, with one being specified as the root. Instead of adding in a random object at the center of all selected objects and translating that, I'm making the bricks link and unlink with each other, which should actually work well in the future with building and saving. Right now, though, it's a basic implementation, works with ctrl-clicking, and no links persist, they just make editing multiple bricks easier.
 
 Implemented that, got it working with at least two bricks (It's designed to work with any number of bricks), but with the error that the bricks chosen as children are moved upon selection. I'll try a few thigns to fix this.
+
+10:50 PM
+
+Multiple object selection is... mostly implemented. Objects will rotate and translate together around a unified pivot point. However, there is a bug that I thought I had addressed.
+Unfortunately, whenever an object becomes the child of another object, its translation and rotation all go from absolute (based on the world) to relative (based on the root). I corrected this for one specific rotation of bricks, but not all of them. Need to fix that before I can be sure that object selection is okay for multiple bricks.
+
+Oh yeah, I added in a button in the adjustment pane to add new bricks. So far, four bricks are easy to handle!
+And a note I meant to put in a while ago: A single 'peg' brick (1x1x1 lego piece) is 20x20x24. So the grid system later on will probably force bricks to move in increments of 10, 10, and 12. There might be 1/3 height bricks as well, so if there are, this will be movement in increments of 10, 10, and 4, or something that depends upon control or shift being pressed. I'll figure that out later.
+
+And on a related note, a certain side of the bricks doesn't register clicks. I have no clue why this is, and I'm leaving it for last to debug. But I know about it.

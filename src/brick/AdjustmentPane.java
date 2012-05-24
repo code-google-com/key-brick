@@ -1,17 +1,25 @@
 package brick;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.threed.jpct.SimpleVector;
 import com.threed.jpct.World;
 
 @SuppressWarnings("serial")
-public class AdjustmentPane extends JPanel {
+public class AdjustmentPane extends JPanel implements ActionListener {
 	private BrickObject chosen;
 	private int numBricks = 0;
 	//Misleading name: Actually number of objects in total, not just bricks.
@@ -21,6 +29,7 @@ public class AdjustmentPane extends JPanel {
 	private JTextField xpos, ypos, zpos;
 	private JTextField xrot, yrot, zrot;
 	private JTextField obj, objx, objy, objz;
+	private JButton addButton;
 	
 	public AdjustmentPane(World w, BrickPanel renderingArea){
 		super();
@@ -54,6 +63,7 @@ public class AdjustmentPane extends JPanel {
 		objz = new JTextField(5);
 		objz.addKeyListener(new FieldListener(objz, this));
 		
+		
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		add(new JLabel("Camera Position: "));
 		add(xpos); add(ypos); add(zpos);
@@ -65,6 +75,11 @@ public class AdjustmentPane extends JPanel {
 		add(obj); add(objx); add(objy); add(objz);
 		obj.setText("0");
 		obj.setName("object");
+		
+		addButton = new JButton("add");
+		addButton.setActionCommand("add");
+		add(addButton);
+		addButton.addActionListener(this);
 	}
 	
 	public void update(){
@@ -85,7 +100,7 @@ public class AdjustmentPane extends JPanel {
 		if(val >= numBricks) val = numBricks - 1;
 		if(numBricks != 0){
 			
-			chosen = ra.getObject(0);
+			chosen = ra.getObject(val);
 			//ra.setSelectedBrick(chosen);
 		
 			SimpleVector objTrans = chosen.getTranslation();
@@ -197,5 +212,28 @@ public class AdjustmentPane extends JPanel {
 			else if(t >= numBricks-1 && i > 0) val.setText("" + (numBricks - 1));
 			else val.setText(Integer.toString(Integer.parseInt(val.getText()) + i));
 		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		System.out.println("Happening.");
+		if("add".equals(e.getActionCommand())){
+			JFileChooser jfc = new JFileChooser(new File(BrickViewer.ldrawPath));
+			FileNameExtensionFilter fnef = new FileNameExtensionFilter("LDraw model files (.dat)", "dat");
+			jfc.setFileFilter(fnef);
+			int ret = jfc.showOpenDialog(null);
+			if(ret == JFileChooser.APPROVE_OPTION){
+				String loc = jfc.getSelectedFile().getName();
+				try {
+					ra.addNewBrick(loc);
+				} catch (PartNotFoundException pnfe) {
+					JOptionPane.showMessageDialog(null, "Cannot find model \"" + loc + "\"");
+				} catch (FileNotFoundException fnfe) {
+					JOptionPane.showMessageDialog(null, "Cannot locate ldconfig.ldr");
+				} 
+			}
+			
+		}
+		
 	}
 }

@@ -1,6 +1,7 @@
 package brick;
 
 import java.awt.*;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 import javax.swing.*;
@@ -25,6 +26,16 @@ public class BrickPanel extends JPanel {
 		selected = new ArrayList<BrickColorPair>();
 		ap = new AdjustmentPane(world, this);
 		addMouseListener(new BrickMouseController(this, world, buffer, 10000));
+		
+	}
+
+	public void addNewBrick(String fileLoc) throws PartNotFoundException, FileNotFoundException {
+		PartFactory fact = new PartFactory(BrickViewer.ldrawPath);
+		PartSpec model = fact.getPart(fileLoc);
+		BrickObject obj = model.toBrickObject(new Matrix(), this);
+		addBrick(obj);
+		
+		
 		
 	}
 	
@@ -88,11 +99,13 @@ public class BrickPanel extends JPanel {
 			pair.getBrick().setColorCode(selectColor);
 			//"If we're not about to try and set a brick to be its own parent"
 			if(selected.size() > 1){
+				System.out.println("Before Adding: " + b.getTranslation());
 				BrickObject base = selected.get(0).getBrick();
 				SimpleVector trans = base.getTranslation();
-				base.translate(-trans.x, -trans.y, -trans.z);
 				base.addChild(pair.getBrick());
-				base.translate(trans);
+				b.translate(-trans.x, -trans.y, -trans.z);
+				System.out.println("After adding: " + b.getTranslation());
+				//base.translate(trans);
 			}
 		} else {
 			//Then remove.
@@ -108,9 +121,11 @@ public class BrickPanel extends JPanel {
 						base.removeChild(selected.get(i).getBrick());
 						newBase.addChild(selected.get(i).getBrick());
 					}
+					newBase.translate(base.getTranslation());
 					
 				} else {
 					base.removeChild(pair.getBrick());
+					pair.getBrick().translate(base.getTranslation());
 				}
 			}
 			//This is a weird line. We're basically just wanting the original color and this gets it
