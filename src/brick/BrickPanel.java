@@ -34,9 +34,6 @@ public class BrickPanel extends JPanel {
 		PartSpec model = fact.getPart(fileLoc);
 		BrickObject obj = model.toBrickObject(new Matrix(), this);
 		addBrick(obj);
-		
-		
-		
 	}
 	
 	//Add an Object3D to the world (component/child of a full BrickObject).
