@@ -33,10 +33,19 @@ public class OptionalLineObject extends BrickObject {
 	}
 	
 	public boolean showLine() {
+		//System.out.println(p1.toString());
+		//System.out.println(p2.toString());
 		SimpleVector project1 = projectPoint(world, p1);
 		SimpleVector project2 = projectPoint(world, p2);
 		SimpleVector projectC1 = projectPoint(world, control1);
 		SimpleVector projectC2 = projectPoint(world, control2);
+		
+		//These changes are to naïvely deal with the camera hating the origin.
+//		if(world == null) System.out.println("world null");
+//		if(project1 == null) project1 = new SimpleVector(0, 0, 0);
+//		if(project2 == null) project2 = new SimpleVector(0, 0, 0);
+//		if(projectC1 == null) projectC1 = new SimpleVector(0, 0, 0);
+//		if(projectC2 == null) projectC2 = new SimpleVector(0, 0, 0);
 		float ctrlSide1 = Util.pointSide(project1, project2, projectC1);
 		float ctrlSide2 = Util.pointSide(project1, project2, projectC2);
 		return (ctrlSide1 < 0 && ctrlSide2 < 0) || (ctrlSide1 > 0 && ctrlSide2 > 0);

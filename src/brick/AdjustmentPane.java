@@ -21,7 +21,6 @@ public class AdjustmentPane extends JPanel {
 	private JTextField xpos, ypos, zpos;
 	private JTextField xrot, yrot, zrot;
 	private JTextField obj, objx, objy, objz;
-	private int lastColor = 2;
 	
 	public AdjustmentPane(World w, BrickPanel renderingArea){
 		super();
@@ -70,7 +69,7 @@ public class AdjustmentPane extends JPanel {
 	
 	public void update(){
 		SimpleVector pos = world.getCamera().getPosition();
-		numBricks = ra.numObjs();
+		numBricks = ra.numBricks();
 		
 		xpos.setText("" + pos.x);
 		ypos.setText("" + pos.y);
@@ -86,10 +85,8 @@ public class AdjustmentPane extends JPanel {
 		if(val >= numBricks) val = numBricks - 1;
 		if(numBricks != 0){
 			
-			if(chosen != null) chosen.setColorCode(lastColor);
-			chosen = ra.getObject(val);
-			lastColor = chosen.findColor();
-			chosen.setColorCode(6);
+			chosen = ra.getObject(0);
+			//ra.setSelectedBrick(chosen);
 		
 			SimpleVector objTrans = chosen.getTranslation();
 		
@@ -142,6 +139,8 @@ public class AdjustmentPane extends JPanel {
 		SimpleVector camPos = new SimpleVector(getXPos(), getYPos(), getZPos());
 		world.getCamera().setPosition(camPos);
 		//System.out.println("Updated Camera.");
+		SimpleVector camDir = new SimpleVector(getXRot(), getYRot(), getZRot()).normalize();
+		world.getCamera().lookAt(camDir);
 		
 		SimpleVector curTrans = chosen.getTranslation();
 		SimpleVector posDelta = new SimpleVector(getObjX() - curTrans.x, getObjY() - curTrans.y, getObjZ() - curTrans.z);

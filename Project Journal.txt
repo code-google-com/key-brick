@@ -1,0 +1,51 @@
+May 18 5:15 PM:
+
+Finished watching Avatar, blended up a second banana mocha frappe, updated VMWare, and am ready to start! My first goal: Controls. I'm going to learn the basic control scheme, and then start doing a few changes based on a different 3D world that I'm used to. Basically, easy camera movements that combine mouse and keyboard input. I feel that these will make further developments more streamlined and easier to test visually.
+
+Just a note on VMWare: My machine is pretty powerful, but the virtual machine I'm running on it has very, very limited access to the graphics card. I feel that this actually will make performance testing more challenging (in a good way) and more representative of the machines that this might be run on in the future. We'll see!
+
+Currently: Downloading mercurial, cloning repository, and setting up Eclipse.
+
+
+May 22 4:34 PM:
+
+I'm terrible at keeping journals. I've been working on the project the last three days (except yesterday, ironically), and have gotten a lot accomplished.
+As for an hours log, about two actual hours of work for the 18th and 19th, cuz I can't remember the times, and four hours for sure on the 20th, if not five.
+
+I had to move the whole thing from the virtual machine to the actual machine, so now I'm working in Windows with an installation of LDraw that I know is correct, and the software seems to behave a bit better. However, I'm sure that most of the exceptions I found when working on the virtual machine are just odd things about jPCT. And now to rant.
+
+Mouse controls, at least point-and-click ones, seem pretty easy to work with. Get the point in 2D that it's clicking, project into 3D, and use a built-in function to see what it's near. And by near I mean within 10000 arbitrary units. Why 10000? I don't know, but it works, and is seemingly exact.
+
+Originally, there was an ArrayList that listed all of the Object3Ds in the world. This is a good thing to have, but I decided to limit this, and make that ArrayList only have BrickObject objects. that is, I changed it so that the system only adds entire bricks to it. To get a list of all of the Object3D objects in the world, there's a method in the World class that returns an Enumeration object that lets you access them all. I use this instead when doing the color updates.
+
+The camera: Oh how I dislike it. Default motion seems to be to move the world around the camera. Is it really better to update every object/vertex/triangle in the world than to reproject it all to the screen?
+For now, it at least makes the world behave better. If the camera moves to the origin, then the projections that need to take place fail and it all falls apart. If the camera moves past the origin, it flips around and mirrors the world over the xz-plane, which is very frustrating. (Actually, it might be the case that the camera doesn't flip, but the calculations for what needs to be displayed flip due to the lack of a negative sign in the camera's vector position.)
+
+So, for a little while I'll let the camera misbehave as I update selections to handle multiple objects.
+
+Oh yeah, and, I think I've mostly been using commit messages as journal entries. Fun!
+
+6:52 PM:
+I just sat down with dinner (leftover curry from Sai Gon's, really good stuff.) and realized I've left out a justification I've been meaning to make.
+So, I'm working heavily on controls: moving bricks, moving the camera, selecting bricks, soon to be implementing a grid-snap system... But I'm ignoring the main purpose of this project: to make a keyframe animator.
+
+I've always hated controls in most 3D design programs (not all, there are some exceptions) and considered them unintuitive and frustrating. I feel that usability is just as important as having a final, finished product. If people can use it easily, then it's easier to work around what doesn't work. It also then should be easier to add new features, assuming the code is understandable
+
+Therefore, I'm working on input things for now. Keyframing will come after I finish getting this to behave.
+
+
+May 23 4:12 PM:
+
+Been working for about another half hour, and at this point, it seems that I need to use this to outline my thought process.
+
+Currently, I'm working on rotating multiple objects at once. First try was to link them all by an invisible parent object and rotate the parent object. No such luck, more effort is needed to make that work.
+Next try was to use the getRotationPivot() to find the rotational pivot of all of the objects, then find the average, then rotate around this new pivot. No such luck, and for a good reason. Had it worked, the resetting of the pivot points would have been off due to translation. Instead, pivot points are all (0, 0, 0), meaning that it's relative to the brick, not the world.
+The next try will be to find the centers of all of the bricks, then set the pivot point to be the offset of the brick from this center.
+... This also didn't work. Oddly enough, when I got it implemented, all objects seemed to rotate about the pivot they had previously. However! A post I found mentioned using dummy objects.
+I'm going to try putting a dummy object at the center of rotation, and maybe use its rotational matrix to make things simpler.
+
+9:04 PM
+
+So I worked til about 6:00 and got distracted. What I've done since then amounts to figuring out that this is a rather difficult problem. At the moment, my solution is to do what a different program I use does: Linking larger objects together, with one being specified as the root. Instead of adding in a random object at the center of all selected objects and translating that, I'm making the bricks link and unlink with each other, which should actually work well in the future with building and saving. Right now, though, it's a basic implementation, works with ctrl-clicking, and no links persist, they just make editing multiple bricks easier.
+
+Implemented that, got it working with at least two bricks (It's designed to work with any number of bricks), but with the error that the bricks chosen as children are moved upon selection. I'll try a few thigns to fix this.
