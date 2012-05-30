@@ -18,12 +18,11 @@ public class BrickKeyController extends KeyAdapter {
 	}
 	
 	@Override
-	//THIS IS BROKEN.
-	//I coded it broken to get the framework in.
-	//This should move bricks individually, yet at the same time.
-	//Need to find unified center and make movements based on that.
+	//Group movements is based on the root of the selection.
+	//While this works as it should, grouping has unwanted side-effects.
+	//I'm working on reversing these side-effects.
 	public void keyPressed(KeyEvent ke) {
-		BrickObject target = 
+		BrickObject target =  
 			renderingArea.getSelectedBricks().isEmpty()
 			? null
 			: renderingArea.getSelectedBricks().get(0).getBrick();
@@ -32,7 +31,22 @@ public class BrickKeyController extends KeyAdapter {
 		else if(ke.isShiftDown()) mult = 0.1f;
 		
 		if (ke.getKeyCode() == KeyEvent.VK_U) {
-			target.rotateX(-angle);
+			for(BrickColorPair targ : renderingArea.getSelectedBricks()){
+				/*target = targ.getBrick();
+				SimpleVector oldPivot = new SimpleVector(target.getRotationPivot());
+				SimpleVector oldTC = new SimpleVector(target.getTransformedCenter());
+				SimpleVector newPivot = new SimpleVector(renderingArea.getSelectionPivot());
+				newPivot.sub(oldTC);
+				System.out.println("Dump:\n\tOldPivot:    " + target.getRotationPivot() +
+								   "\n\tTransCenter: " + target.getTransformedCenter() +
+								   "\n\tSelectPivot: " + newPivot +
+								   "\n\tDiff:        " + oldTC);
+				
+				
+				target.setRotationPivot(newPivot);*/
+				targ.getBrick().rotateX(-angle);
+				//target.setRotationPivot(oldPivot);
+			}
 		} else if (ke.getKeyCode() == KeyEvent.VK_I) {
 			target.rotateX(angle);
 		} else if (ke.getKeyCode() == KeyEvent.VK_J) {

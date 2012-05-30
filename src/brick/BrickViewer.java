@@ -45,14 +45,17 @@ public class BrickViewer extends JFrame {
 		//Make them different colors.
 		obj.setColorCode(2);
 		obj2.setColorCode(1);
-		//Make them clickable.
-		//obj.setCollisionMode(Object3D.COLLISION_CHECK_OTHERS);
-		//obj2.setCollisionMode(Object3D.COLLISION_CHECK_OTHERS);
-		
 		
 		bp.setSelectedBrick(obj);
 		bp.buildAll();
+		
+		System.out.println("Original Pivot:  " + obj2.getRotationPivot());
+		System.out.println("Original Center: " + obj2.getCenter());
+		System.out.println("Original TCent:  " + obj2.getTransformedCenter());
+		obj .setRotationPivot(new SimpleVector(10, 0, 10));
+		obj2.setRotationPivot(new SimpleVector(10, 0, 10));
 		addKeyListener(new BrickKeyController((float)Math.PI/4, bp));
+		bp.setupDefaultListeners();
 		helper = new JFrame();
 		helper.add(bp.ap);
 		helper.setSize(400, 150);

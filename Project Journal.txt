@@ -59,3 +59,26 @@ Oh yeah, I added in a button in the adjustment pane to add new bricks. So far, f
 And a note I meant to put in a while ago: A single 'peg' brick (1x1x1 lego piece) is 20x20x24. So the grid system later on will probably force bricks to move in increments of 10, 10, and 12. There might be 1/3 height bricks as well, so if there are, this will be movement in increments of 10, 10, and 4, or something that depends upon control or shift being pressed. I'll figure that out later.
 
 And on a related note, a certain side of the bricks doesn't register clicks. I have no clue why this is, and I'm leaving it for last to debug. But I know about it.
+
+
+May 26 3:04 PM:
+
+Starting back up! I worked a couple hours Thursday trying to figure out the translation stuff, but either I'm missing one detail or I'm rusty on the math, because I can't find a sipmle solution to it.
+Yesterday... No work done. I woke up to the housemates having made me coffee and having bought a new game, a variation of Risk. Sufficient motivation to spend ten hours playing only two games. None of us ever played Risk before, and apparently I am really bad at it. But I still want to play again! Luckily, my housemates are gone for the weekend, so no distractions!
+
+May 30 2:26 PM:
+
+Has it really been four days since I updated this? I managed to get sick Saturday and have since been poking around at the problem of multiple-selection rotations. But illness makes the world seem less interesting, and coffee is a bad idea with a fever. Still no solution for the rotations, though, so I'm putting this off. The user can just move each brick one at a time. Good enough for a basic keyframer!
+
+Right now in the code I'm about to commit, both implementations exist, both are commented out... Mostly. I'm honestly not certain what is and isn't set to be working.
+
+What I have accomplished: A nifty little object select screen that has a low-impact (I think) preview window! With simple bricks in mind, the preview brick is rotated slightly to show the front, one side, and the top. You can click and drag in the window to view the rest of it, and it snaps back into place when you let go!
+I also added in buttons to move single bricks around, even if that object is in a group of objects (but, though I haven't tested it, I'm sure that the top object will still move all children).
+
+And now I just realized where the data structures class is useful, even with all data structures already implemented for us in Java (this is mostly a joke, but hear me out anyway). When setting up the brick hierarchy, I wanted to keep a certain structure to it, regardless of which object gets added or removed. Thus, some of the tricks to keep it in order and easy to handle came straight from working with trees of other types. Yay!
+
+I used MLCad to make this rather cool Super Robot Anubis Wizard Bugle Player figurine, which I might use in the keyframe animator. Awesome, right? No, because it makes the polygon count exceed 100000. How?!
+
+What I have noticed: The OptionalLineObject class is slightly broken, but I don't want to do the math yet to make it work. (Yeah, I'm lazy.) I think I'll instead just look for null vectors and return false and see if that works. The reason this is broken: Most (all?) projections depend on the camera's position, which is a bit volatile. For example, it seems perfectly natural to move the camera to the origin at some point, but you can't really project onto the zero vector (Though admittedly, I'd just expect it to return the zero vector, not a null vector, so the issue might be elsewhere, I haven't thoroughly debugged this issue yet).
+
+Just an aside, since I feel this song is awesome enough to immortalize in a digitalized journal entry that probably two people are ever going to read: Pandora's playing awesomeness again. Ryan Farish's Still Life.

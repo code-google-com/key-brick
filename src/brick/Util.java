@@ -1,8 +1,12 @@
 package brick;
 
 import java.io.File;
+import java.util.ArrayList;
 
-import com.threed.jpct.*;
+import com.threed.jpct.Matrix;
+import com.threed.jpct.Object3D;
+import com.threed.jpct.Primitives;
+import com.threed.jpct.SimpleVector;
 
 public class Util {
 	private Util() {throw new UnsupportedOperationException("No Util objects");}
@@ -39,5 +43,19 @@ public class Util {
 	
 	public static float pointSide(SimpleVector p1, SimpleVector p2, SimpleVector query) {
 		return (p2.x - p1.x) * (query.y - p1.y) - (p2.y - p1.y) * (query.x - p1.x);
+	}
+	
+	
+	public static SimpleVector findCenter(ArrayList<BrickColorPair> list){
+		System.out.println("Called Find Center.");
+		float x = 0; float y = 0; float z = 0;
+		SimpleVector center;
+		for(BrickColorPair obj : list){
+			center = obj.getBrick().getTransformedCenter();
+			x += center.x; y += center.y; z += center.z;
+		}
+		return new SimpleVector(x/list.size(), y/list.size(), z/list.size());
+		
+		
 	}
 }

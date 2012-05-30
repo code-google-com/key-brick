@@ -10,13 +10,13 @@ import com.threed.jpct.SimpleVector;
 import com.threed.jpct.World;
 import com.threed.jpct.Object3D;
 
-public class BrickMouseController extends MouseAdapter {
+public class MouseSelectController extends MouseAdapter {
 	private BrickPanel ra;
 	private FrameBuffer buffer;
 	private World world;
 	private float pad;
 	
-	public BrickMouseController(BrickPanel renderingArea, World world, FrameBuffer buffer, float pad) {
+	public MouseSelectController(BrickPanel renderingArea, World world, FrameBuffer buffer, float pad) {
 		this.world = world;
 		this.buffer = buffer;
 		ra = renderingArea;

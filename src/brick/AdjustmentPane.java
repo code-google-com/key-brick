@@ -29,7 +29,11 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 	private JTextField xpos, ypos, zpos;
 	private JTextField xrot, yrot, zrot;
 	private JTextField obj, objx, objy, objz;
-	private JButton addButton;
+	private JButton addButton, objrx, objry, objrz;
+	private JButton shiftx, shifty, shiftz;
+	private float transStep = 1f;
+	private float angle = (float)Math.PI / 4;
+	
 	
 	public AdjustmentPane(World w, BrickPanel renderingArea){
 		super();
@@ -80,6 +84,18 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 		addButton.setActionCommand("add");
 		add(addButton);
 		addButton.addActionListener(this);
+		
+		objrx = new JButton("Rotate X"); objry = new JButton("Rotate Y"); objrz = new JButton("Rotate Z");
+		objrx.setActionCommand("xrot"); objry.setActionCommand("yrot"); objrz.setActionCommand("zrot");
+		add(objrx); add(objry); add(objrz);
+		objrx.addActionListener(this); objry.addActionListener(this); objrz.addActionListener(this);
+		
+		shiftx = new JButton("Translate X"); shifty = new JButton("Translate Y"); shiftz = new JButton("Translate Z");
+		shiftx.setActionCommand("xtran"); shifty.setActionCommand("ytran"); shiftz.setActionCommand("ztran");
+		add(shiftx); add(shifty); add(shiftz);
+		shiftx.addActionListener(this); shifty.addActionListener(this); shiftz.addActionListener(this);
+		
+		
 	}
 	
 	public void update(){
@@ -109,7 +125,7 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 			objy.setText("" + objTrans.y);
 			objz.setText("" + objTrans.z);
 		} else {
-			System.out.println("Numbricks is 0");
+			System.out.println("Stuff! BLARHJHAJHD");
 		}
 	}
 	public float getXPos(){
@@ -152,10 +168,11 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 	public void updateCamera(){
 		//SimpleVector newRot = new SimpleVector(getXRot(), getYRot(), getZRot());
 		SimpleVector camPos = new SimpleVector(getXPos(), getYPos(), getZPos());
+		SimpleVector orig = world.getCamera().getDirection();
 		world.getCamera().setPosition(camPos);
 		//System.out.println("Updated Camera.");
 		SimpleVector camDir = new SimpleVector(getXRot(), getYRot(), getZRot()).normalize();
-		world.getCamera().lookAt(camDir);
+		//world.getCamera().lookAt(orig);
 		
 		SimpleVector curTrans = chosen.getTranslation();
 		SimpleVector posDelta = new SimpleVector(getObjX() - curTrans.x, getObjY() - curTrans.y, getObjZ() - curTrans.z);
@@ -217,9 +234,28 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		System.out.println("Happening.");
-		if("add".equals(e.getActionCommand())){
+		String command = e.getActionCommand();
+		
+		Boolean isCtrl = (e.getModifiers() & ActionEvent.CTRL_MASK) != 0;
+		
+		if(command.startsWith("xt")){
+			chosen.translateX(isCtrl ? -transStep : transStep);
+		} else if(command.startsWith("yt")){
+			chosen.translateY(isCtrl ? -transStep : transStep);
+		} else if(command.startsWith("zt")){
+			chosen.translateZ(isCtrl ? -transStep : transStep);
+		} else if(command.startsWith("xr")){
+			chosen.rotateX(isCtrl ? -angle : angle);
+		} else if(command.startsWith("yr")){
+			chosen.rotateY(isCtrl ? -angle : angle);
+		} else if(command.startsWith("zr")){
+			chosen.rotateZ(isCtrl ? -angle : angle);
+		} else if("add".equals(command)){
 			JFileChooser jfc = new JFileChooser(new File(BrickViewer.ldrawPath));
-			FileNameExtensionFilter fnef = new FileNameExtensionFilter("LDraw model files (.dat)", "dat");
+			BrickPreviewWindow bpw = new BrickPreviewWindow(jfc, 200, 200);
+			bpw.setupListeners();
+			jfc.setAccessory(bpw);
+			FileNameExtensionFilter fnef = new FileNameExtensionFilter("LDraw model files (.dat, .ldr)", "dat", "ldr");
 			jfc.setFileFilter(fnef);
 			int ret = jfc.showOpenDialog(null);
 			if(ret == JFileChooser.APPROVE_OPTION){
@@ -234,6 +270,7 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 			}
 			
 		}
+		ra.repaint();
 		
 	}
 }

@@ -1,12 +1,20 @@
 package brick;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 
-import com.threed.jpct.*;
+import com.threed.jpct.FrameBuffer;
+import com.threed.jpct.IRenderer;
+import com.threed.jpct.Interact2D;
+import com.threed.jpct.Matrix;
+import com.threed.jpct.Object3D;
+import com.threed.jpct.SimpleVector;
+import com.threed.jpct.World;
 
 @SuppressWarnings("serial")
 public class BrickPanel extends JPanel {
@@ -16,16 +24,30 @@ public class BrickPanel extends JPanel {
 	private ArrayList<BrickColorPair> selected;
 	protected AdjustmentPane ap;
 	public final int selectColor = 7;
+	private SimpleVector selectionPivot;
+	
 	
 	public BrickPanel() {
+		this(800, 600);
+	}
+	
+	public BrickPanel(int width, int height) {
 		super();
 		world = new World();
 		world.setAmbientLight(0, 0, 0);
-		buffer = new FrameBuffer(800, 600, FrameBuffer.SAMPLINGMODE_NORMAL);
+		buffer = new FrameBuffer(width, height, FrameBuffer.SAMPLINGMODE_NORMAL);
 		bricks = new ArrayList<BrickObject>();
 		selected = new ArrayList<BrickColorPair>();
 		ap = new AdjustmentPane(world, this);
-		addMouseListener(new BrickMouseController(this, world, buffer, 10000));
+	}
+	
+
+	public void setupDefaultListeners(){
+		MouseRotateController mrc = new MouseRotateController(this, world);
+		
+		addMouseListener(new MouseSelectController(this, world, buffer, 10000));
+		addMouseListener(mrc);
+		addMouseMotionListener(mrc);
 		
 	}
 
@@ -47,11 +69,15 @@ public class BrickPanel extends JPanel {
 		return o instanceof BrickObject ? bricks.contains(o) : false;
 	}
 	
+	public boolean isTopBrick(Object3D o){
+		return o instanceof BrickObject ? (bricks.contains(o) && !((BrickObject)o).isGrouped()) : false;
+	}
+	
 	public int indexOf(BrickObject brick){
 		return bricks.indexOf(brick);
 	}
 	
-	//Add a BrickObject to the ArrayList.
+	//Add a completed BrickObject to the ArrayList.
 	//Provides for easier tracking of full objects.
 	public void addBrick(BrickObject brick){
 		bricks.add(brick);
@@ -61,21 +87,28 @@ public class BrickPanel extends JPanel {
 		return bricks.size();
 	}
 	
+	public void removeAllObjects(){
+		world.removeAllObjects();
+		selected.clear();
+		bricks.clear();
+	}
+	
+	public SimpleVector getSelectionPivot(){
+		return selectionPivot;
+	}
+	
 	//Change it from some number of selected bricks to only one.
 	//Also edits colors here now.
 	public void setSelectedBrick(BrickObject b){
 		//Need first brick: Selection hierarchy makes this one the "root" of what's chosen.
 		if(!selected.isEmpty()){
-			BrickObject first = selected.get(0).getBrick();
 			for(BrickColorPair pair : selected){
-				if(!pair.getBrick().equals(first)){
-					first.removeChild(pair.getBrick());
-				}
-				pair.getBrick().setColorCode(pair.getColorCode());
+				pair.getBrick().setColorCode(selected.get(selected.indexOf(pair)).getColorCode());
 			}
 			selected.clear();
 		}
 		selected.add(new BrickColorPair(b));
+		selectionPivot = Util.findCenter(selected);
 		b.setColorCode(selectColor);
 		repaint();
 		//ap.updateSelectedObject(b);
@@ -96,39 +129,52 @@ public class BrickPanel extends JPanel {
 			pair.getBrick().setColorCode(selectColor);
 			//"If we're not about to try and set a brick to be its own parent"
 			if(selected.size() > 1){
-				System.out.println("Before Adding: " + b.getTranslation());
-				BrickObject base = selected.get(0).getBrick();
-				SimpleVector trans = base.getTranslation();
-				base.addChild(pair.getBrick());
-				b.translate(-trans.x, -trans.y, -trans.z);
-				System.out.println("After adding: " + b.getTranslation());
+
+				//System.out.println("Before Adding: " + b.getTranslation());
+				//System.out.println("Before Adding: " + b.getCenter());
+				//BrickObject base = selected.get(0).getBrick();
+				//SimpleVector trans = base.getTranslation();
+				//Matrix origRot = b.getRotationMatrix();
+				//SimpleVector origCenter = b.getCenter();
+				//base.addChild(b);
+				//b.setRotationMatrix(base.getRotationMatrix().invert());
+				//SimpleVector newCenter = b.getCenter();
+				//System.out.println("Orig Center: " + origCenter);
+				//System.out.println("New Center: " + newCenter);
+				//b.getCenter();
+				//b.set(base.getInverseWorldTransformation());
+				//System.out.println("After adding: " + b.getTranslation());
+				//System.out.println("After adding: " + b.getCenter());
 				//base.translate(trans);
 			}
 		} else {
 			//Then remove.
 			System.out.println("Contains");
 			//If this is the only selected object, it's not its own parent.
-			if(selected.size() > 1){
-				BrickObject base = selected.get(0).getBrick();
-				if(base.equals(pair.getBrick())){
-					//If we're trying to deselect the base brick.
-					BrickObject newBase = selected.get(1).getBrick();
-					base.removeChild(newBase);
-					for(int i = 2; i < selected.size(); i++){
-						base.removeChild(selected.get(i).getBrick());
-						newBase.addChild(selected.get(i).getBrick());
-					}
-					newBase.translate(base.getTranslation());
-					
-				} else {
-					base.removeChild(pair.getBrick());
-					pair.getBrick().translate(base.getTranslation());
-				}
-			}
+//			if(selected.size() > 1){
+//				BrickObject base = selected.get(0).getBrick();
+//				if(base.equals(pair.getBrick())){
+//					//If we're trying to deselect the base brick.
+//					BrickObject newBase = selected.get(1).getBrick();
+//					base.removeChild(newBase);
+//					for(int i = 2; i < selected.size(); i++){
+//						//base.removeChild(selected.get(i).getBrick());
+//						//newBase.addChild(selected.get(i).getBrick());
+//					}
+//					//newBase.setTranslationMatrix(base.getTranslationMatrix());
+//					newBase.translate(base.getTranslation());
+//					
+//				} else {
+//					//base.removeChild(pair.getBrick());
+//					//b.setRotationMatrix(base.getRotationMatrix().cloneMatrix());
+//					pair.getBrick().translate(base.getTranslation());
+//				}
+//			}
 			//This is a weird line. We're basically just wanting the original color and this gets it
 			pair.getBrick().setColorCode(selected.get(selected.indexOf(pair)).getColorCode());
 			selected.remove(pair);
 		}
+		selectionPivot = Util.findCenter(selected);
 	}
 	
 	public ArrayList<BrickColorPair> getSelectedBricks(){
@@ -160,8 +206,8 @@ public class BrickPanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void paintComponent(Graphics g) {
-		//This reeeeally makes Java unhappy.
 		ap.update();
+		//This reeeeally makes Java unhappy.
 		for (Enumeration<BrickObject> bricks = world.getObjects(); bricks.hasMoreElements();) {
 			bricks.nextElement().adjustColor();
 		}
