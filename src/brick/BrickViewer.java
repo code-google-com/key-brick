@@ -54,6 +54,9 @@ public class BrickViewer extends JFrame {
 		System.out.println("Original TCent:  " + obj2.getTransformedCenter());
 		obj .setRotationPivot(new SimpleVector(10, 0, 10));
 		obj2.setRotationPivot(new SimpleVector(10, 0, 10));
+		System.out.println("Object's name is " + obj.getName());
+		System.out.println("Object2's name is " + obj2.getName());
+		
 		addKeyListener(new BrickKeyController((float)Math.PI/4, bp));
 		bp.setupDefaultListeners();
 		helper = new JFrame();

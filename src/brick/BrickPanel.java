@@ -41,6 +41,10 @@ public class BrickPanel extends JPanel {
 		ap = new AdjustmentPane(world, this);
 	}
 	
+	public ArrayList<BrickObject> getBricks(){
+		return bricks;
+	}
+	
 
 	public void setupDefaultListeners(){
 		MouseRotateController mrc = new MouseRotateController(this, world);
@@ -51,11 +55,12 @@ public class BrickPanel extends JPanel {
 		
 	}
 
-	public void addNewBrick(String fileLoc) throws PartNotFoundException, FileNotFoundException {
+	public BrickObject addNewBrick(String fileLoc) throws PartNotFoundException, FileNotFoundException {
 		PartFactory fact = new PartFactory(BrickViewer.ldrawPath);
 		PartSpec model = fact.getPart(fileLoc);
 		BrickObject obj = model.toBrickObject(new Matrix(), this);
 		addBrick(obj);
+		return obj;
 	}
 	
 	//Add an Object3D to the world (component/child of a full BrickObject).
@@ -63,6 +68,11 @@ public class BrickPanel extends JPanel {
 	public void addObject(BrickObject obj) {
 		world.addObject(obj);
 		obj.setCulling(Object3D.CULLING_DISABLED);
+	}
+	
+	public void removeObjecy(BrickObject obj){
+		world.removeObject(obj);
+		
 	}
 	
 	public boolean isBrick(Object3D o){

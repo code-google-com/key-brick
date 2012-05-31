@@ -15,6 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import keyframe.Animator;
+import keyframe.Keyframe;
+
 import com.threed.jpct.SimpleVector;
 import com.threed.jpct.World;
 
@@ -31,6 +34,10 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 	private JTextField obj, objx, objy, objz;
 	private JButton addButton, objrx, objry, objrz;
 	private JButton shiftx, shifty, shiftz;
+	private JButton takeFrame, restoreFrame, clear;
+	private JButton play;
+	private Keyframe frame1;
+	private Keyframe frame2;
 	private float transStep = 1f;
 	private float angle = (float)Math.PI / 4;
 	
@@ -94,6 +101,18 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 		shiftx.setActionCommand("xtran"); shifty.setActionCommand("ytran"); shiftz.setActionCommand("ztran");
 		add(shiftx); add(shifty); add(shiftz);
 		shiftx.addActionListener(this); shifty.addActionListener(this); shiftz.addActionListener(this);
+		
+		takeFrame = new JButton("Take Frame"); restoreFrame = new JButton("Restore Last Frame"); clear = new JButton("Clear");
+		takeFrame.setActionCommand("take"); restoreFrame.setActionCommand("restore"); clear.setActionCommand("clear");
+		add(takeFrame); add(restoreFrame); add(clear);
+		takeFrame.addActionListener(this);
+		restoreFrame.addActionListener(this);
+		clear.addActionListener(this);
+		
+		play = new JButton("Play");
+		play.setActionCommand("play");
+		add(play);
+		play.addActionListener(this);
 		
 		
 	}
@@ -168,10 +187,8 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 	public void updateCamera(){
 		//SimpleVector newRot = new SimpleVector(getXRot(), getYRot(), getZRot());
 		SimpleVector camPos = new SimpleVector(getXPos(), getYPos(), getZPos());
-		SimpleVector orig = world.getCamera().getDirection();
 		world.getCamera().setPosition(camPos);
 		//System.out.println("Updated Camera.");
-		SimpleVector camDir = new SimpleVector(getXRot(), getYRot(), getZRot()).normalize();
 		//world.getCamera().lookAt(orig);
 		
 		SimpleVector curTrans = chosen.getTranslation();
@@ -233,7 +250,6 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("Happening.");
 		String command = e.getActionCommand();
 		
 		Boolean isCtrl = (e.getModifiers() & ActionEvent.CTRL_MASK) != 0;
@@ -250,6 +266,17 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 			chosen.rotateY(isCtrl ? -angle : angle);
 		} else if(command.startsWith("zr")){
 			chosen.rotateZ(isCtrl ? -angle : angle);
+		} else if(command.equals("take")){
+			if(frame1 == null) frame1 = new Keyframe(ra, world, 0);
+			else frame2 = new Keyframe(ra, world, 0);
+		} else if(command.equals("restore")){
+			Animator.restoreFromFrame(ra, world, frame1);
+		} else if(command.equals("clear")){
+			ra.removeAllObjects();
+		} else if(command.equals("play")){
+			new Thread(new Runnable() {
+	            public void run() { Animator.moveBetweenFrames(ra, world, frame1, frame2); }
+	        }).start();
 		} else if("add".equals(command)){
 			JFileChooser jfc = new JFileChooser(new File(BrickViewer.ldrawPath));
 			BrickPreviewWindow bpw = new BrickPreviewWindow(jfc, 200, 200);

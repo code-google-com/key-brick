@@ -1,11 +1,69 @@
 package keyframe;
 
+import java.util.ArrayList;
+
+import brick.BrickObject;
+import brick.BrickPanel;
+
+import com.threed.jpct.Camera;
+import com.threed.jpct.Matrix;
+import com.threed.jpct.SimpleVector;
+import com.threed.jpct.World;
+
+
+//Class to handle keyframes of the animation.
 public class Keyframe {
+	NonCamera nCam;
+	NonBrick[] nBricks;
+	int framesBefore;
 	
+	public Keyframe(BrickPanel panel, World world, int framesBefore){
+		this.framesBefore = framesBefore;
+		ArrayList<BrickObject> bricks = panel.getBricks();
+		nCam = new NonCamera(world.getCamera());
+		nBricks = new NonBrick[bricks.size()];
+		for(int i = 0; i < nBricks.length; i++){
+			nBricks[i] = new NonBrick(bricks.get(i));
+		}
+	}
 	
+	public NonBrick[] getBricksInScene(){
+		return nBricks;
+	}
 	
+	public NonCamera getCameraInfo(){
+		return nCam;
+	}
 	
+	//Everything you wanted to know about a brick without actually having a brick. 
+	class NonBrick{
+		public SimpleVector translation;
+		public SimpleVector rotationPivot;
+		public Matrix rotation;
+		public String name;
+		//Color code might be off for selected bricks. Remove this when it's fixed.
+		public int colorCode;
+		
+		public NonBrick(BrickObject obj){
+			translation = new SimpleVector(obj.getTranslation());
+			rotationPivot = new SimpleVector(obj.getRotationPivot());
+			rotation = obj.getRotationMatrix().cloneMatrix();
+			colorCode = obj.findColor();
+			name = obj.getName();
+		}
+	}
 	
-	
+	//Everything needed to restore a camera.
+	class NonCamera{
+		public SimpleVector position;
+		public SimpleVector direction;
+		public SimpleVector up;
+		
+		public NonCamera(Camera cam){
+			position = new SimpleVector(cam.getPosition());
+			direction = new SimpleVector(cam.getDirection());
+			up = new SimpleVector(cam.getUpVector());
+		}
+	}
 	
 }
