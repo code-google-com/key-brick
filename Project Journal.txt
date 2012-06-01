@@ -6,6 +6,11 @@ Just a note on VMWare: My machine is pretty powerful, but the virtual machine I'
 
 Currently: Downloading mercurial, cloning repository, and setting up Eclipse.
 
+(Times for 18th: 5:00-7:00 approximately, loosely based on knowing I did two hours and when I probably worked.) 2 hours
+(Times for 19th: 4:00-6:00, approximately, loosely based on mercurial times and next entry.) 2 hours
+(Times for 20th: 5:00-7:00, 8:00-10:00 approximately, loosely based on mercurial times.) 4 hours
+
+
 
 May 22 4:34 PM:
 
@@ -32,6 +37,8 @@ So, I'm working heavily on controls: moving bricks, moving the camera, selecting
 I've always hated controls in most 3D design programs (not all, there are some exceptions) and considered them unintuitive and frustrating. I feel that usability is just as important as having a final, finished product. If people can use it easily, then it's easier to work around what doesn't work. It also then should be easier to add new features, assuming the code is understandable
 
 Therefore, I'm working on input things for now. Keyframing will come after I finish getting this to behave.
+
+(Times: 4:30-6:30, 7:00-9:00) 4 hours
 
 
 May 23 4:12 PM:
@@ -60,12 +67,16 @@ And a note I meant to put in a while ago: A single 'peg' brick (1x1x1 lego piece
 
 And on a related note, a certain side of the bricks doesn't register clicks. I have no clue why this is, and I'm leaving it for last to debug. But I know about it.
 
+(Times: 4:00-6:00, 9:00-11:00) 4 hours
+(Times for 24th: approximately 3:00-5:00) 2 hours
+
 
 May 26 3:04 PM:
 
 Starting back up! I worked a couple hours Thursday trying to figure out the translation stuff, but either I'm missing one detail or I'm rusty on the math, because I can't find a sipmle solution to it.
 Yesterday... No work done. I woke up to the housemates having made me coffee and having bought a new game, a variation of Risk. Sufficient motivation to spend ten hours playing only two games. None of us ever played Risk before, and apparently I am really bad at it. But I still want to play again! Luckily, my housemates are gone for the weekend, so no distractions!
 
+(Times: 3:00-5:00, plus about the same on 27th, 28th.) 6 hours
 
 May 30 2:26 PM:
 
@@ -92,4 +103,16 @@ Next step: Interpolate between two frames!
 
 8:41 PM:
 
-Basic two-frame keyframe animation is done! Except for the camera part. But that shouldn't be too hard to implement. Right now the only real bugs involve colors of bricks and deformities caused from interpolating the rotation matrix. One I can fix, the other will be interesting. And by interesting, I mean I have to pick between it and a few other bugs to finish off this project. Also, I've been invited out to dinner with friends, so this is the last update of the night!
+Basic two-frame keyframe animating is done! Except for the camera part. But that shouldn't be too hard to implement. Right now the only real bugs involve colors of bricks and deformities caused from interpolating the rotation matrix. One I can fix, the other will be interesting. And by interesting, I mean I have to pick between it and a few other bugs to finish off this project. Also, I've been invited out to dinner with friends, so this is the last update of the night!
+
+(Times: 2:30-5:00, 6:00-8:30) 5 hours
+
+
+May 31 5:34 PM:
+
+Added in some formatting stuff to the helper window, now things are automatically grouped by row depending on what their function is. This took me about half an hour earlier, just from a lot of rearranging. Everything else takes place from now on!
+
+Managed to get multiple frames running in a row with a new preview window. It's pretty cool. And I fixed the keyboard input keys, just a few swaps. Short entires!
+
+(Times: 3:30-6:30, 8:20-10:20) 5 hours
+

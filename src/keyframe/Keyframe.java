@@ -8,7 +8,6 @@ import brick.BrickPanel;
 import com.threed.jpct.Camera;
 import com.threed.jpct.Matrix;
 import com.threed.jpct.SimpleVector;
-import com.threed.jpct.World;
 
 
 //Class to handle keyframes of the animation.
@@ -17,10 +16,10 @@ public class Keyframe {
 	NonBrick[] nBricks;
 	int framesBefore;
 	
-	public Keyframe(BrickPanel panel, World world, int framesBefore){
+	public Keyframe(BrickPanel panel, int framesBefore){
 		this.framesBefore = framesBefore;
 		ArrayList<BrickObject> bricks = panel.getBricks();
-		nCam = new NonCamera(world.getCamera());
+		nCam = new NonCamera(panel.getWorld().getCamera());
 		nBricks = new NonBrick[bricks.size()];
 		for(int i = 0; i < nBricks.length; i++){
 			nBricks[i] = new NonBrick(bricks.get(i));

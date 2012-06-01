@@ -1,24 +1,14 @@
 package brick;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Enumeration;
 
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 
-import com.threed.jpct.FrameBuffer;
-import com.threed.jpct.IRenderer;
-import com.threed.jpct.Interact2D;
 import com.threed.jpct.Matrix;
-import com.threed.jpct.Object3D;
-import com.threed.jpct.SimpleVector;
-import com.threed.jpct.World;
 
 @SuppressWarnings("serial")
 public class BrickPreviewWindow extends BrickPanel
@@ -32,7 +22,6 @@ public class BrickPreviewWindow extends BrickPanel
 		setPreferredSize(new Dimension(width, height));
         fc.addPropertyChangeListener(this);
 		buildAll();
-		if(ap == null) System.out.println("ap is null");
 	}
 	
 	public void setupListeners(){
@@ -64,7 +53,6 @@ public class BrickPreviewWindow extends BrickPanel
 		}
 		repaint();
 	}
-	
 	@Override
 	public void propertyChange(PropertyChangeEvent pce) {
         String prop = pce.getPropertyName();

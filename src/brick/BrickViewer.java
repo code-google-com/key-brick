@@ -1,5 +1,6 @@
 package brick;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -10,15 +11,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.threed.jpct.Config;
 import com.threed.jpct.Matrix;
-import com.threed.jpct.Object3D;
-import com.threed.jpct.SimpleVector;
 
 
 @SuppressWarnings("serial")
 public class BrickViewer extends JFrame {
 	//private final static String myPath = "~/books/robotics";
 	public final static String ldrawPath = "C:\\Program Files (x86)\\LDraw";
-	private final JFrame helper;
+	private AdjustmentPane ap;
 	
 	public BrickViewer(String filename) throws PartNotFoundException, FileNotFoundException {
 		PartFactory fact = new PartFactory(ldrawPath);
@@ -49,26 +48,29 @@ public class BrickViewer extends JFrame {
 		bp.setSelectedBrick(obj);
 		bp.buildAll();
 		
-		System.out.println("Original Pivot:  " + obj2.getRotationPivot());
-		System.out.println("Original Center: " + obj2.getCenter());
-		System.out.println("Original TCent:  " + obj2.getTransformedCenter());
-		obj .setRotationPivot(new SimpleVector(10, 0, 10));
-		obj2.setRotationPivot(new SimpleVector(10, 0, 10));
-		System.out.println("Object's name is " + obj.getName());
-		System.out.println("Object2's name is " + obj2.getName());
+//		System.out.println("Original Pivot:  " + obj2.getRotationPivot());
+//		System.out.println("Original Center: " + obj2.getCenter());
+//		System.out.println("Original TCent:  " + obj2.getTransformedCenter());
+//		obj .setRotationPivot(new SimpleVector(10, 0, 10));
+//		obj2.setRotationPivot(new SimpleVector(10, 0, 10));
+//		System.out.println("Object's name is " + obj.getName());
+//		System.out.println("Object2's name is " + obj2.getName());
 		
 		addKeyListener(new BrickKeyController((float)Math.PI/4, bp));
 		bp.setupDefaultListeners();
-		helper = new JFrame();
-		helper.add(bp.ap);
-		helper.setSize(400, 150);
-		
-		
+		ap = new AdjustmentPane(bp);
+		bp.setAdjustmentPane(ap);
+		ap.setSize(400, 225);
 	}
 	
 	public void setVisible(boolean b){
 		super.setVisible(b);
-		helper.setVisible(b);
+		ap.setVisible(b);
+		
+		ap.updatePositions();
+		Point apPos = ap.getLocation();
+		apPos.x += ap.getWidth();
+		setLocation(apPos);
 	}
 	
 	public static void main(String[] args) {

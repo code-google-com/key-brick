@@ -1,14 +1,18 @@
 package brick;
 
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -16,19 +20,21 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import keyframe.Animator;
+import keyframe.FramePreviewPane;
 import keyframe.Keyframe;
 
 import com.threed.jpct.SimpleVector;
 import com.threed.jpct.World;
 
 @SuppressWarnings("serial")
-public class AdjustmentPane extends JPanel implements ActionListener {
+public class AdjustmentPane extends JFrame implements ActionListener {
 	private BrickObject chosen;
 	private int numBricks = 0;
 	//Misleading name: Actually number of objects in total, not just bricks.
 	
 	private World world;
 	private BrickPanel ra;
+	private BrickPanel preview;
 	private JTextField xpos, ypos, zpos;
 	private JTextField xrot, yrot, zrot;
 	private JTextField obj, objx, objy, objz;
@@ -40,12 +46,14 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 	private Keyframe frame2;
 	private float transStep = 1f;
 	private float angle = (float)Math.PI / 4;
+	private FramePreviewPane fpw;
 	
 	
-	public AdjustmentPane(World w, BrickPanel renderingArea){
+	public AdjustmentPane(BrickPanel renderingArea){
 		super();
-		world = w;
+		JPanel contents = new JPanel();
 		ra = renderingArea;
+		world = ra.getWorld();
 		
 		//Camera position indicators
 		xpos = new JTextField(5);
@@ -76,45 +84,93 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 		
 		
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		add(new JLabel("Camera Position: "));
-		add(xpos); add(ypos); add(zpos);
+		JPanel com1 = new JPanel();
+		com1.add(new JLabel("Camera Position: "));
+		com1.add(xpos); com1.add(ypos); com1.add(zpos);
+		xpos.setMaximumSize(xpos.getPreferredSize());
+		ypos.setMaximumSize(ypos.getPreferredSize());
+		zpos.setMaximumSize(zpos.getPreferredSize());
+		com1.setLayout(new BoxLayout(com1, BoxLayout.X_AXIS));
 		
-		add(new JLabel("Camera Rotation: "));
-		add(xrot); add(yrot); add(zrot);
+		JPanel com2 = new JPanel();
+		com2.add(new JLabel("Camera Rotation: "));
+		com2.add(xrot); com2.add(yrot); com2.add(zrot);
+		xrot.setMaximumSize(xrot.getPreferredSize());
+		yrot.setMaximumSize(yrot.getPreferredSize());
+		zrot.setMaximumSize(zrot.getPreferredSize());
+		com2.setLayout(new BoxLayout(com2, BoxLayout.X_AXIS));
 		
-		add(new JLabel("Edit Object3D:"));
-		add(obj); add(objx); add(objy); add(objz);
+		JPanel com3 = new JPanel();
+		com3.add(new JLabel("Edit Object3D:"));
+		com3.add(obj); com3.add(objx); com3.add(objy); com3.add(objz);
+		obj.setMaximumSize(obj.getPreferredSize());
+		objx.setMaximumSize(objx.getPreferredSize());
+		objy.setMaximumSize(objy.getPreferredSize());
+		objz.setMaximumSize(objz.getPreferredSize());
 		obj.setText("0");
 		obj.setName("object");
+		com3.setLayout(new BoxLayout(com3, BoxLayout.X_AXIS));
 		
-		addButton = new JButton("add");
+		addButton = new JButton("Add new brick");
 		addButton.setActionCommand("add");
-		add(addButton);
+		//add(addButton);
 		addButton.addActionListener(this);
 		
+		JPanel com4 = new JPanel();
 		objrx = new JButton("Rotate X"); objry = new JButton("Rotate Y"); objrz = new JButton("Rotate Z");
 		objrx.setActionCommand("xrot"); objry.setActionCommand("yrot"); objrz.setActionCommand("zrot");
-		add(objrx); add(objry); add(objrz);
+		objrx.setMaximumSize(objrx.getPreferredSize());
+		objry.setMaximumSize(objry.getPreferredSize());
+		objrz.setMaximumSize(objrz.getPreferredSize());
+		com4.add(objrx); com4.add(objry); com4.add(objrz);
 		objrx.addActionListener(this); objry.addActionListener(this); objrz.addActionListener(this);
+		com4.setLayout(new BoxLayout(com4, BoxLayout.X_AXIS));
 		
+		JPanel com5 = new JPanel();
 		shiftx = new JButton("Translate X"); shifty = new JButton("Translate Y"); shiftz = new JButton("Translate Z");
 		shiftx.setActionCommand("xtran"); shifty.setActionCommand("ytran"); shiftz.setActionCommand("ztran");
-		add(shiftx); add(shifty); add(shiftz);
+		shiftx.setMaximumSize(shiftx.getPreferredSize());
+		shifty.setMaximumSize(shifty.getPreferredSize());
+		shiftz.setMaximumSize(shiftz.getPreferredSize());
+		com5.add(shiftx); com5.add(shifty); com5.add(shiftz);
 		shiftx.addActionListener(this); shifty.addActionListener(this); shiftz.addActionListener(this);
+		com5.setLayout(new BoxLayout(com5, BoxLayout.X_AXIS));
 		
+		JPanel com6 = new JPanel();
 		takeFrame = new JButton("Take Frame"); restoreFrame = new JButton("Restore Last Frame"); clear = new JButton("Clear");
 		takeFrame.setActionCommand("take"); restoreFrame.setActionCommand("restore"); clear.setActionCommand("clear");
-		add(takeFrame); add(restoreFrame); add(clear);
+		com6.add(takeFrame); com6.add(restoreFrame); com6.add(clear);
 		takeFrame.addActionListener(this);
 		restoreFrame.addActionListener(this);
 		clear.addActionListener(this);
 		
 		play = new JButton("Play");
 		play.setActionCommand("play");
-		add(play);
+		com6.add(play);
 		play.addActionListener(this);
+		com6.setLayout(new BoxLayout(com6, BoxLayout.X_AXIS));
 		
+		contents.setLayout(new BoxLayout(contents, BoxLayout.Y_AXIS));
+		contents.add(com1); contents.add(com2); contents.add(com3);
+		contents.add(addButton);
+		contents.add(com4); contents.add(com5); contents.add(com6);
 		
+		add(contents);
+		
+		fpw = new FramePreviewPane();
+		preview = fpw.getPreviewPanel();
+		fpw.setVisible(true);
+		
+	}
+	
+	//Has to be called AFTER it gets set visible and has its size changed.
+	//Otherwise, returned values will be zero and this will break.
+	public void updatePositions(){
+		Point pos = getLocation();
+		pos.x += getWidth() - fpw.getWidth();
+		pos.y += getHeight();
+		
+		fpw.setLocation(pos);
 	}
 	
 	public void update(){
@@ -267,15 +323,21 @@ public class AdjustmentPane extends JPanel implements ActionListener {
 		} else if(command.startsWith("zr")){
 			chosen.rotateZ(isCtrl ? -angle : angle);
 		} else if(command.equals("take")){
-			if(frame1 == null) frame1 = new Keyframe(ra, world, 0);
-			else frame2 = new Keyframe(ra, world, 0);
+			fpw.addFrame(new Keyframe(ra, 0));
 		} else if(command.equals("restore")){
-			Animator.restoreFromFrame(ra, world, frame1);
+			Animator.restoreFromFrame(ra, fpw.getCurrentFrame());
 		} else if(command.equals("clear")){
 			ra.removeAllObjects();
 		} else if(command.equals("play")){
 			new Thread(new Runnable() {
-	            public void run() { Animator.moveBetweenFrames(ra, world, frame1, frame2); }
+	            public void run() {
+	            	ArrayList<Keyframe> frames = fpw.getAllFrames();
+	            	Animator.restoreFromFrame(ra, frames.get(0));
+	            	ra.repaint();
+	            	for(int i = 1; i < frames.size(); i++){
+	            		Animator.moveBetweenFrames(ra, world, frames.get(i - 1), frames.get(i));
+	            	}
+	            }
 	        }).start();
 		} else if("add".equals(command)){
 			JFileChooser jfc = new JFileChooser(new File(BrickViewer.ldrawPath));

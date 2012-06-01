@@ -9,7 +9,6 @@ import com.threed.jpct.World;
 
 public class MouseRotateController extends MouseAdapter {
 	private BrickPanel ra;
-	private FrameBuffer buffer;
 	private World world;
 	private float pX;
 	private float pY;

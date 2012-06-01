@@ -16,7 +16,7 @@ import com.threed.jpct.World;
 
 public class Animator {
 	
-	public static int steps = 30;
+	public static int steps = 60;
 	public static int seconds = 1;
 	
 	//Assuming no pivot changes. That is, the pivot is only used for restoring. 
@@ -27,8 +27,8 @@ public class Animator {
 		NonBrick[] endBricks = frame2.getBricksInScene();
 		
 		float step = 1;
-		float timeStep = (float)seconds / (float)steps;
-		float timePassed = 0;
+		//float timeStep = (float)seconds / (float)steps;
+		//float timePassed = 0;
 		
 		while(step < steps){
 			long startTime = System.currentTimeMillis();
@@ -44,14 +44,11 @@ public class Animator {
 					System.out.println("Updating rotation");
 					Matrix inBetween = new Matrix(); 
 					inBetween.interpolate(start.rotation, end.rotation, progress);
-					brick.setRotationMatrix(inBetween);
+					brick.setRotationMatrix(inBetween.cloneMatrix());
 				}
 				if(!start.translation.equals(end.translation)){
-					SimpleVector change = new SimpleVector
-						(end.translation.x - start.translation.x,
-						 end.translation.y - start.translation.y,
-						 end.translation.z - start.translation.z
-						);
+					SimpleVector change = new SimpleVector(end.translation);
+					change.sub(start.translation);
 					change.scalarMul(1f/(float)steps);
 					System.out.println("cha: " + change);
 					System.out.print(brick.getTranslation() + " => ");
@@ -98,8 +95,10 @@ public class Animator {
 		}
 	}
 	
-	public static void restoreFromFrame(BrickPanel panel, World world,
+	public static void restoreFromFrame(BrickPanel panel,
 										Keyframe frame){
+		
+		World world = panel.getWorld();
 		panel.removeAllObjects();
 		NonBrick[] scene = frame.getBricksInScene();
 		try {

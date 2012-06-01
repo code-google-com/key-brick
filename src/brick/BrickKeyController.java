@@ -62,21 +62,21 @@ public class BrickKeyController extends KeyAdapter {
 		} else if (ke.getKeyCode() == 109) {
 			target.scale(1 / 1.1f);
 		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD8) {
-			target.translate(0f, 0f, mult);
-		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD2) {
-			target.translate(0f, 0f, -mult);
-		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD4) {
-			target.translate(0f, mult, 0f);
-		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD6) {
 			target.translate(0f, -mult, 0f);
+		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD2) {
+			target.translate(0f, mult, 0f);
+		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD4) {
+			target.translate(0f, 0f, mult);
+		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD6) {
+			target.translate(0f, 0f, -mult);
 		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD7) {
 			target.translate(0f, -mult, mult);
 		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD9) {
-			target.translate(0f, mult, mult);
-		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD1) {
-			target.translate(0f, mult, -mult);
-		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD3) {
 			target.translate(0f, -mult, -mult);
+		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD1) {
+			target.translate(0f, mult, mult);
+		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD3) {
+			target.translate(0f, mult, -mult);
 		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD0) {
 			target.translate(mult, 0f, 0f);
 		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD5) {

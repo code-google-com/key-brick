@@ -22,7 +22,7 @@ public class BrickPanel extends JPanel {
 	private FrameBuffer buffer;
 	private ArrayList<BrickObject> bricks;
 	private ArrayList<BrickColorPair> selected;
-	protected AdjustmentPane ap;
+	private AdjustmentPane ap;
 	public final int selectColor = 7;
 	private SimpleVector selectionPivot;
 	
@@ -38,7 +38,6 @@ public class BrickPanel extends JPanel {
 		buffer = new FrameBuffer(width, height, FrameBuffer.SAMPLINGMODE_NORMAL);
 		bricks = new ArrayList<BrickObject>();
 		selected = new ArrayList<BrickColorPair>();
-		ap = new AdjustmentPane(world, this);
 	}
 	
 	public ArrayList<BrickObject> getBricks(){
@@ -52,7 +51,6 @@ public class BrickPanel extends JPanel {
 		addMouseListener(new MouseSelectController(this, world, buffer, 10000));
 		addMouseListener(mrc);
 		addMouseMotionListener(mrc);
-		
 	}
 
 	public BrickObject addNewBrick(String fileLoc) throws PartNotFoundException, FileNotFoundException {
@@ -72,7 +70,14 @@ public class BrickPanel extends JPanel {
 	
 	public void removeObjecy(BrickObject obj){
 		world.removeObject(obj);
-		
+	}
+	
+	public World getWorld(){
+		return world;
+	}
+	
+	public void setAdjustmentPane(AdjustmentPane ap){
+		this.ap = ap;
 	}
 	
 	public boolean isBrick(Object3D o){
@@ -216,7 +221,7 @@ public class BrickPanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void paintComponent(Graphics g) {
-		ap.update();
+		if(ap != null) ap.update();
 		//This reeeeally makes Java unhappy.
 		for (Enumeration<BrickObject> bricks = world.getObjects(); bricks.hasMoreElements();) {
 			bricks.nextElement().adjustColor();
