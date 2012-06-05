@@ -112,7 +112,14 @@ May 31 5:34 PM:
 
 Added in some formatting stuff to the helper window, now things are automatically grouped by row depending on what their function is. This took me about half an hour earlier, just from a lot of rearranging. Everything else takes place from now on!
 
-Managed to get multiple frames running in a row with a new preview window. It's pretty cool. And I fixed the keyboard input keys, just a few swaps. Short entires!
+Managed to get multiple frames running in a row with a new preview window. It's pretty cool. And I fixed the keyboard input keys, just a few swaps. Short entries!
 
 (Times: 3:30-6:30, 8:20-10:20) 5 hours
+
+
+June 1 3:21 PM:
+
+I'm supposed to be done by today, aren't I? Oops. Well, I went back and added up my times and such, and I've passed the 30 hour mark by a bit, but that doesn't mean much. Just means I've completed the hours requirement.
+Anyway, the next thing for me to do is... I think work on the preview panel to add in more frame editing features.
+
 

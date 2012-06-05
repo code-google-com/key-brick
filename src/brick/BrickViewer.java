@@ -61,6 +61,7 @@ public class BrickViewer extends JFrame {
 		ap = new AdjustmentPane(bp);
 		bp.setAdjustmentPane(ap);
 		ap.setSize(400, 225);
+		ap.updateSelectedObject(obj);
 	}
 	
 	public void setVisible(boolean b){

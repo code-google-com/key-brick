@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -37,11 +38,12 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 	private BrickPanel preview;
 	private JTextField xpos, ypos, zpos;
 	private JTextField xrot, yrot, zrot;
-	private JTextField obj, objx, objy, objz;
+	private JTextField obji, objx, objy, objz, objc;
 	private JButton addButton, objrx, objry, objrz;
 	private JButton shiftx, shifty, shiftz;
 	private JButton takeFrame, restoreFrame, clear;
 	private JButton play;
+	private JPanel pos, rot, obj;
 	private Keyframe frame1;
 	private Keyframe frame2;
 	private float transStep = 1f;
@@ -56,6 +58,7 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		world = ra.getWorld();
 		
 		//Camera position indicators
+		
 		xpos = new JTextField(5);
 		xpos.addKeyListener(new FieldListener(xpos, this));
 		ypos = new JTextField(5);
@@ -73,43 +76,57 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		zrot.addKeyListener(new FieldListener(zrot, this));
 		
 		//Selected object indicators (index in objs, then position)
-		obj = new JTextField(5);
-		obj.addKeyListener(new FieldListener(obj, this));
+		obji = new JTextField(5);
+		obji.addKeyListener(new FieldListener(obji, this));
 		objx = new JTextField(5);
 		objx.addKeyListener(new FieldListener(objx, this));
 		objy = new JTextField(5);
 		objy.addKeyListener(new FieldListener(objy, this));
 		objz = new JTextField(5);
 		objz.addKeyListener(new FieldListener(objz, this));
+		objc = new JTextField(3);
+		objc.addKeyListener(new FieldListener(objc, this));
 		
 		
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		JPanel com1 = new JPanel();
-		com1.add(new JLabel("Camera Position: "));
-		com1.add(xpos); com1.add(ypos); com1.add(zpos);
+		pos = new JPanel();
+		pos.setBorder(BorderFactory.createTitledBorder("Camera Position:"));
+		pos.add(new JLabel("X:")); pos.add(xpos);
+		pos.add(new JLabel("Y:")); pos.add(ypos);
+		pos.add(new JLabel("Z:")); pos.add(zpos);
 		xpos.setMaximumSize(xpos.getPreferredSize());
 		ypos.setMaximumSize(ypos.getPreferredSize());
 		zpos.setMaximumSize(zpos.getPreferredSize());
-		com1.setLayout(new BoxLayout(com1, BoxLayout.X_AXIS));
+		pos.setLayout(new BoxLayout(pos, BoxLayout.X_AXIS));
 		
-		JPanel com2 = new JPanel();
-		com2.add(new JLabel("Camera Rotation: "));
-		com2.add(xrot); com2.add(yrot); com2.add(zrot);
+		rot = new JPanel();
+		rot.setBorder(BorderFactory.createTitledBorder("Camera Direction Vector:"));
+		rot.add(new JLabel("X:")); rot.add(xrot);
+		rot.add(new JLabel("Y:")); rot.add(yrot);
+		rot.add(new JLabel("Z:")); rot.add(zrot);
 		xrot.setMaximumSize(xrot.getPreferredSize());
 		yrot.setMaximumSize(yrot.getPreferredSize());
 		zrot.setMaximumSize(zrot.getPreferredSize());
-		com2.setLayout(new BoxLayout(com2, BoxLayout.X_AXIS));
+		rot.setLayout(new BoxLayout(rot, BoxLayout.X_AXIS));
 		
-		JPanel com3 = new JPanel();
-		com3.add(new JLabel("Edit Object3D:"));
-		com3.add(obj); com3.add(objx); com3.add(objy); com3.add(objz);
-		obj.setMaximumSize(obj.getPreferredSize());
+		obj = new JPanel();
+		obj.setBorder(BorderFactory.createTitledBorder("Edit Object Parameters:"));
+		obj.add(new JLabel("Object: "));	obj.add(obji);
+		obj.add(new JLabel("Position X: "));	obj.add(objx);
+		obj.add(new JLabel("Y: "));	obj.add(objy);
+		obj.add(new JLabel("Z: ")); obj.add(objz);
+		obj.add(new JLabel("Color: ")); obj.add(objc);
+		obji.setMaximumSize(obji.getPreferredSize());
 		objx.setMaximumSize(objx.getPreferredSize());
 		objy.setMaximumSize(objy.getPreferredSize());
 		objz.setMaximumSize(objz.getPreferredSize());
-		obj.setText("0");
-		obj.setName("object");
-		com3.setLayout(new BoxLayout(com3, BoxLayout.X_AXIS));
+		objc.setMaximumSize(objc.getPreferredSize());
+		obji.setName("object");
+		objc.setName("color");
+		obj.setLayout(new BoxLayout(obj, BoxLayout.X_AXIS));
+		obj.setMaximumSize(obj.getPreferredSize());
+		pos.setMinimumSize(obj.getPreferredSize());
+		rot.setMinimumSize(obj.getPreferredSize());
 		
 		addButton = new JButton("Add new brick");
 		addButton.setActionCommand("add");
@@ -151,7 +168,7 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		com6.setLayout(new BoxLayout(com6, BoxLayout.X_AXIS));
 		
 		contents.setLayout(new BoxLayout(contents, BoxLayout.Y_AXIS));
-		contents.add(com1); contents.add(com2); contents.add(com3);
+		contents.add(pos); contents.add(rot); contents.add(obj);
 		contents.add(addButton);
 		contents.add(com4); contents.add(com5); contents.add(com6);
 		
@@ -187,7 +204,7 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		yrot.setText("" + dir.y);
 		zrot.setText("" + dir.z);
 		
-		int val = Integer.parseInt(obj.getText());
+		int val = Integer.parseInt(obji.getText());
 		if(val >= numBricks) val = numBricks - 1;
 		if(numBricks != 0){
 			
@@ -199,8 +216,7 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 			objx.setText("" + objTrans.x);
 			objy.setText("" + objTrans.y);
 			objz.setText("" + objTrans.z);
-		} else {
-			System.out.println("Stuff! BLARHJHAJHD");
+			objc.setText("" + ra.getTrueColor(chosen));
 		}
 	}
 	public float getXPos(){
@@ -231,15 +247,17 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		return Float.parseFloat(objz.getText());
 	}
 	public int getObj(){
-		return Integer.parseInt(obj.getText());
+		return Integer.parseInt(obji.getText());
 	}
 	
 	public void updateSelectedObject(BrickObject brick){
-		obj.setText("" + ra.indexOf(brick));
+		obji.setText("" + ra.indexOf(brick));
+		objc.setText("" + ra.getTrueColor(brick));
 		update();
 		updateCamera();
 	}
 	
+	//Badly named function. This actually applies all changes in the panel for both camera and object.
 	public void updateCamera(){
 		//SimpleVector newRot = new SimpleVector(getXRot(), getYRot(), getZRot());
 		SimpleVector camPos = new SimpleVector(getXPos(), getYPos(), getZPos());
@@ -247,9 +265,14 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		//System.out.println("Updated Camera.");
 		//world.getCamera().lookAt(orig);
 		
+		//First, change the position of the object.
 		SimpleVector curTrans = chosen.getTranslation();
 		SimpleVector posDelta = new SimpleVector(getObjX() - curTrans.x, getObjY() - curTrans.y, getObjZ() - curTrans.z);
 		chosen.translate(posDelta);
+		//Then change the color.
+		chosen.setColorCode(Integer.parseInt(objc.getText()));
+		//Now make the color change stick.
+		ra.updateBrick(chosen);
 		ra.repaint();
 		//System.out.println("Updated Object " + getObj() +  ".");
 	}
@@ -268,7 +291,11 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 				ap.updateCamera();
 			} else if (ke.getKeyCode() == KeyEvent.VK_UP) {
 				if(val.getName() != null){
-					setObjectVal(1);
+					if(val.getName().equals("object")){
+						setObjectVal(1);
+					} else if (val.getName().equals("color")){
+						setColorVal(1);
+					}
 				} else if (ke.isControlDown()){
 					setVal(10.0f);
 				} else if (ke.isShiftDown()){
@@ -279,7 +306,11 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 				ap.updateCamera();
 			} else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
 				if(val.getName() != null){
-					setObjectVal(-1);
+					if(val.getName().equals("object")){
+						setObjectVal(-1);
+					} else if (val.getName().equals("color")){
+						setColorVal(-1);
+					}
 				} else if(ke.isControlDown()){
 					setVal(-10.0f);
 				} else if (ke.isShiftDown()){
@@ -296,11 +327,22 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 			val.setText(res);
 		}
 		
+		private void setColorVal(int c){
+			int t = Integer.parseInt(val.getText());
+			if(t < 0 || (t == 0 && c < 0)){
+				val.setText("0");
+				return;
+			} else {
+				val.setText("" + (t + c));
+			}
+			
+		}
+		
 		private void setObjectVal(int i){
 			int t = Integer.parseInt(val.getText());
 			if(t <= 0 && i < 0) val.setText("0");
 			else if(t >= numBricks-1 && i > 0) val.setText("" + (numBricks - 1));
-			else val.setText(Integer.toString(Integer.parseInt(val.getText()) + i));
+			else val.setText("" + (t + i));
 		}
 	}
 
@@ -323,19 +365,20 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		} else if(command.startsWith("zr")){
 			chosen.rotateZ(isCtrl ? -angle : angle);
 		} else if(command.equals("take")){
-			fpw.addFrame(new Keyframe(ra, 0));
+			fpw.addFrame(new Keyframe(ra, 16));
 		} else if(command.equals("restore")){
-			Animator.restoreFromFrame(ra, fpw.getCurrentFrame());
+			new Animator(ra).restoreFromFrame(fpw.getCurrentFrame());
 		} else if(command.equals("clear")){
 			ra.removeAllObjects();
 		} else if(command.equals("play")){
 			new Thread(new Runnable() {
 	            public void run() {
 	            	ArrayList<Keyframe> frames = fpw.getAllFrames();
-	            	Animator.restoreFromFrame(ra, frames.get(0));
+	            	Animator ani = new Animator(ra);
+	            	ani.restoreFromFrame(frames.get(0));
 	            	ra.repaint();
 	            	for(int i = 1; i < frames.size(); i++){
-	            		Animator.moveBetweenFrames(ra, world, frames.get(i - 1), frames.get(i));
+	            		ani.moveBetweenFrames(frames.get(i - 1), frames.get(i), 31);
 	            	}
 	            }
 	        }).start();
@@ -350,6 +393,7 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 			if(ret == JFileChooser.APPROVE_OPTION){
 				String loc = jfc.getSelectedFile().getName();
 				try {
+					
 					ra.addNewBrick(loc);
 				} catch (PartNotFoundException pnfe) {
 					JOptionPane.showMessageDialog(null, "Cannot find model \"" + loc + "\"");

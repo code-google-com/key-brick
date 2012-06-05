@@ -81,29 +81,34 @@ public class BrickKeyController extends KeyAdapter {
 			target.translate(mult, 0f, 0f);
 		} else if (ke.getKeyCode() == KeyEvent.VK_NUMPAD5) {
 			target.translate(-mult, 0f, 0f);
-		} else {
-			//System.out.println(ke.getKeyChar() + ", " + ke.getKeyCode());
+		} else if (ke.getKeyCode() == KeyEvent.VK_ASTERISK) {
+			target.setColorCode(renderingArea.getSelectedBricks().get(0).getColorCode() + 1);
+			renderingArea.getSelectedBricks().set(0, new BrickColorPair(target));
+			System.out.println("Asterisk!");
+//		} else {
+//			System.out.println(ke.getKeyChar() + ", " + ke.getKeyCode());
+//			System.out.println("Not " + KeyEvent.VK_ASTERISK);
 		}
 		renderingArea.repaint();
 		//System.out.println();
 	}
 
-	private SimpleVector getCentralPoint(SimpleVector[] centers) {
-		if(centers.length == 0) return new SimpleVector();
-		if(centers.length == 1) return centers[0];
-		//SimpleVector res = pivots[0];
-		float x = 0; float y = 0; float z = 0;
-		for(SimpleVector p : centers){
-			x += p.x;
-			y += p.y;
-			z += p.z;
-		}
-		
-		SimpleVector res = new SimpleVector(x, y, z);
-		res.scalarMul(1.0f/(float)centers.length);
-		return res;
-		
-	}
+//	private SimpleVector getCentralPoint(SimpleVector[] centers) {
+//		if(centers.length == 0) return new SimpleVector();
+//		if(centers.length == 1) return centers[0];
+//		//SimpleVector res = pivots[0];
+//		float x = 0; float y = 0; float z = 0;
+//		for(SimpleVector p : centers){
+//			x += p.x;
+//			y += p.y;
+//			z += p.z;
+//		}
+//		
+//		SimpleVector res = new SimpleVector(x, y, z);
+//		res.scalarMul(1.0f/(float)centers.length);
+//		return res;
+//		
+//	}
 	
 	
 }

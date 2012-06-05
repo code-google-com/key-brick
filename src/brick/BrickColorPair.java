@@ -9,7 +9,14 @@ public class BrickColorPair {
 	public BrickColorPair(BrickObject brick){
 		this.brick = brick;
 		colorCode = brick.findColor();
-		System.out.println("Made new brick with color code " + colorCode);
+		//System.out.println("Made new brick with color code " + colorCode);
+	}
+	
+	//Version to use when forcefully overwriting the color.
+	public BrickColorPair(BrickObject brick, int color){
+		this.brick = brick;
+		colorCode = color;
+		//System.out.println("Made new brick with color code " + colorCode);
 	}
 
 	public BrickObject getBrick() {
@@ -32,6 +39,11 @@ public class BrickColorPair {
 	public boolean equals(Object other){
 		if(other instanceof BrickColorPair){
 			if(brick.equals(((BrickColorPair)other).getBrick())) return true;
+			return false;
+		} if(other instanceof BrickObject){
+			//Wanted to use this for easier contains() calls... Doesn't work.
+			//contains() checks the class for me. Leaving this anyway.
+			if(brick.equals((BrickObject)other)) return true;
 			return false;
 		} else {
 			return false;

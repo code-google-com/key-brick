@@ -68,7 +68,7 @@ public class BrickPanel extends JPanel {
 		obj.setCulling(Object3D.CULLING_DISABLED);
 	}
 	
-	public void removeObjecy(BrickObject obj){
+	public void removeObject(BrickObject obj){
 		world.removeObject(obj);
 	}
 	
@@ -78,6 +78,7 @@ public class BrickPanel extends JPanel {
 	
 	public void setAdjustmentPane(AdjustmentPane ap){
 		this.ap = ap;
+		
 	}
 	
 	public boolean isBrick(Object3D o){
@@ -112,6 +113,23 @@ public class BrickPanel extends JPanel {
 		return selectionPivot;
 	}
 	
+	//Get the color that the brick was born with or that it was changed to,
+	//but never get the selection color unless that's it.
+	//Returns -1 if the brick doesn't exist.
+	public int getTrueColor(BrickObject obj){
+		//Normally this line always returns false. Not true here.
+		if(!selected.contains(new BrickColorPair(obj))){
+			if(!bricks.contains(obj)) return -1;
+			return obj.findColor();
+		}
+		return selected.get(selected.indexOf(new BrickColorPair(obj))).getColorCode();
+	}
+	
+	public int getTrueColor(int index){
+		if(index >= bricks.size() || index < 0) return -1;
+		return getTrueColor(bricks.get(index));
+	}
+	
 	//Change it from some number of selected bricks to only one.
 	//Also edits colors here now.
 	public void setSelectedBrick(BrickObject b){
@@ -128,6 +146,14 @@ public class BrickPanel extends JPanel {
 		repaint();
 		//ap.updateSelectedObject(b);
 	}
+	
+	//Call it when the color of a brick has changed.
+	public void updateBrick(BrickObject obj){
+		BrickColorPair pair = new BrickColorPair(obj);
+		if(selected.contains(pair))
+			selected.set(selected.indexOf(pair), new BrickColorPair(obj, getTrueColor(obj)));
+	}
+	
 	
 	//Set from the information pane. 
 	public void setSelectedBrick(int i){

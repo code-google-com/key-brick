@@ -15,17 +15,49 @@ import com.threed.jpct.SimpleVector;
 import com.threed.jpct.World;
 
 public class Animator {
+	private BrickPanel panel;
+	private World world;
 	
-	public static int steps = 60;
-	public static int seconds = 1;
+	public Animator(BrickPanel panel){
+		this.panel = panel;
+		world = panel.getWorld();
+	}
 	
-	//Assuming no pivot changes. That is, the pivot is only used for restoring. 
-	public static void moveBetweenFrames(BrickPanel panel, World world,
-										 Keyframe frame1, Keyframe frame2){
+	
+	public void moveBetweenFrames(Keyframe frame1, Keyframe frame2){
+		moveBetweenFrames(frame1, frame2, 31);
+	}
+	
+	//Assuming no pivot changes. That is, the pivot is only used for restoring.
+	//Camera changes need to be added as well.
+	//This method also cannot handle new bricks or removed bricks.
+	//To remove a brick, translate it by (-1000,-1000,-1000).
+	//This distance from the camera makes it not rendered.
+	//Also, here are some defaults for your information:
+	//		framerate: 31 frames per second
+	//		seconds between two keyframes: 2
+	//		frames between two keyframes: 31 fps * 2 sec = 62 frames
+	//		*Technically, this counts the first keyframe as the first, and the
+	//		 second keyframe as the 63rd frame (first of the next animation).
+	public void moveBetweenFrames(Keyframe frame1, Keyframe frame2, int framerate){
+		
 		ArrayList<BrickObject> bricks = panel.getBricks();
 		NonBrick[] startBricks = frame1.getBricksInScene();
 		NonBrick[] endBricks = frame2.getBricksInScene();
+
+		int steps = 62;
+		float seconds = 2;
 		
+		if(frame2.getFramesBefore() != 0){
+			steps = frame2.getFramesBefore();
+			seconds = (float)steps/(float)framerate;
+		}
+		System.out.println("Will take " + seconds + " second.");
+		
+		int framelength = 1000/framerate;
+		
+		//Step is 1 here and not 0.
+		//This is because frame 0 is already being shown.
 		float step = 1;
 		//float timeStep = (float)seconds / (float)steps;
 		//float timePassed = 0;
@@ -57,8 +89,9 @@ public class Animator {
 				}
 			}
 			step++;
-			System.out.println("step");
-			while(System.currentTimeMillis() - startTime < 50){System.out.print(".");}
+			//System.out.println("step");
+			//this attempts to keep a uniform frame length
+			while(System.currentTimeMillis() - startTime < framelength);
 			panel.repaint();
 		}
 		for(int i = 0; i < startBricks.length; i++){
@@ -95,10 +128,8 @@ public class Animator {
 		}
 	}
 	
-	public static void restoreFromFrame(BrickPanel panel,
-										Keyframe frame){
+	public void restoreFromFrame(Keyframe frame){
 		
-		World world = panel.getWorld();
 		panel.removeAllObjects();
 		NonBrick[] scene = frame.getBricksInScene();
 		try {
