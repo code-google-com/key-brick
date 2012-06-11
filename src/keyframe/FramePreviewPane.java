@@ -3,6 +3,7 @@ package keyframe;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -10,10 +11,13 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import brick.BrickPanel;
 
@@ -235,6 +239,26 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 		new Animator(preview).restoreFromFrame(frames.get(curFrame));
 	}
 	
+	private void saveFrame(){
+		frames.get(curFrame).saveToFile("frame_" + curFrame);
+	}
+	
+	private void addFrame(){
+		JFileChooser fc = new JFileChooser();
+		FileNameExtensionFilter fnef = new FileNameExtensionFilter("KeyFrame frame files (.kf)", "kf");
+		//fc.setFileFilter(fnef);
+		//int ret = fc.showOpenDialog(null);
+		//if(ret == JFileChooser.APPROVE_OPTION){
+			try {
+				Keyframe kf = new Keyframe(new File("C:\\Users\\Riley\\Javaworkspace\\key-brick\\frame_0.kf"));//fc.getSelectedFile());
+				addFrame(kf);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+				e.printStackTrace();
+			}
+		//}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		String command = arg0.getActionCommand();
@@ -246,7 +270,14 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 			prev();
 		} else if(command.equals("last")){
 			last();
+		} else if(command.equals("save_frame")){
+			saveFrame();
+		} else if(command.equals("add_frame")){
+			addFrame();
 		}
+		
+		
+		
 	}
 
 }

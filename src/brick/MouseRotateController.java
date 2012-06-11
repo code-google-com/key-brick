@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import com.threed.jpct.FrameBuffer;
 import com.threed.jpct.World;
 
 public class MouseRotateController extends MouseAdapter {

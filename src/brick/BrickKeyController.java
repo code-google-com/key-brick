@@ -2,11 +2,6 @@ package brick;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-
-import com.threed.jpct.Matrix;
-import com.threed.jpct.Object3D;
-import com.threed.jpct.SimpleVector;
 
 public class BrickKeyController extends KeyAdapter {
 	private float angle;
@@ -31,7 +26,7 @@ public class BrickKeyController extends KeyAdapter {
 		else if(ke.isShiftDown()) mult = 0.1f;
 		
 		if (ke.getKeyCode() == KeyEvent.VK_U) {
-			for(BrickColorPair targ : renderingArea.getSelectedBricks()){
+			//for(BrickColorPair targ : renderingArea.getSelectedBricks()){
 				/*target = targ.getBrick();
 				SimpleVector oldPivot = new SimpleVector(target.getRotationPivot());
 				SimpleVector oldTC = new SimpleVector(target.getTransformedCenter());
@@ -44,9 +39,9 @@ public class BrickKeyController extends KeyAdapter {
 				
 				
 				target.setRotationPivot(newPivot);*/
-				targ.getBrick().rotateX(-angle);
 				//target.setRotationPivot(oldPivot);
-			}
+			//}
+			target.rotateX(-angle);
 		} else if (ke.getKeyCode() == KeyEvent.VK_I) {
 			target.rotateX(angle);
 		} else if (ke.getKeyCode() == KeyEvent.VK_J) {

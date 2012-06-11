@@ -60,7 +60,7 @@ public class BrickViewer extends JFrame {
 		bp.setupDefaultListeners();
 		ap = new AdjustmentPane(bp);
 		bp.setAdjustmentPane(ap);
-		ap.setSize(400, 225);
+		ap.setSize(400, 290);
 		ap.updateSelectedObject(obj);
 	}
 	

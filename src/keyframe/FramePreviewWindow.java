@@ -1,11 +1,7 @@
 package keyframe;
 
 import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
-import java.io.File;
 import java.io.FileNotFoundException;
-
-import javax.swing.JFileChooser;
 
 import brick.BrickObject;
 import brick.BrickPanel;

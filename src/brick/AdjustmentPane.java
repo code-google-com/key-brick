@@ -35,7 +35,6 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 	
 	private World world;
 	private BrickPanel ra;
-	private BrickPanel preview;
 	private JTextField xpos, ypos, zpos;
 	private JTextField xrot, yrot, zrot;
 	private JTextField obji, objx, objy, objz, objc;
@@ -44,8 +43,6 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 	private JButton takeFrame, restoreFrame, clear;
 	private JButton play;
 	private JPanel pos, rot, obj;
-	private Keyframe frame1;
-	private Keyframe frame2;
 	private float transStep = 1f;
 	private float angle = (float)Math.PI / 4;
 	private FramePreviewPane fpw;
@@ -175,7 +172,6 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		add(contents);
 		
 		fpw = new FramePreviewPane();
-		preview = fpw.getPreviewPanel();
 		fpw.setVisible(true);
 		
 	}
