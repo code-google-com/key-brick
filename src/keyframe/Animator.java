@@ -1,7 +1,19 @@
 package keyframe;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.swing.JOptionPane;
 
 import keyframe.Keyframe.NonBrick;
 import keyframe.Keyframe.NonCamera;
@@ -158,6 +170,64 @@ public class Animator {
 			e.printStackTrace();
 		} catch (PartNotFoundException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static boolean saveMovieToFile(ArrayList<Keyframe> frames){
+		String name = JOptionPane.showInputDialog("Name of movie: ");
+		name = name.split("\\.", 2)[0];
+		
+		
+		
+		File f = new File(name.endsWith(".kf") ? name : name + ".kf");
+		try {
+			BufferedWriter bf = new BufferedWriter(new FileWriter(f));
+			bf.write("MOVIE");
+			//for(Keyframe kf : )
+			bf.close();
+			return true;
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Save failed.");
+			return false;
+		}
+		
+	}
+	
+	public void zipEm(){
+		
+		
+		File directory = new File("");
+		 
+		File files[] = directory.listFiles();
+		 
+		try {
+			BufferedInputStream origin = null;
+			FileOutputStream dest = new FileOutputStream("");
+			ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(dest));
+			int BUFFER = 20480;
+			byte data[] = new byte[BUFFER];
+			
+			File f = null;
+			ZipEntry entry = null;
+			FileInputStream fi = null;
+			int count;
+			
+			// Iterate over the file list and add them to the zip file.
+			for (int i=0; i <files.length; i++) {
+				fi = new FileInputStream(files[i]);
+				origin = new BufferedInputStream(fi, BUFFER);
+				entry = new ZipEntry(files[i].getName());
+				zip.putNextEntry(entry);
+				
+				while((count = origin.read(data,0,BUFFER)) != -1){
+					zip.write(data,0,count);
+				}
+				count = 0;
+				origin.close();
+			}
+			zip.close();
+		}
+		catch (Exception e){
 		}
 	}
 }

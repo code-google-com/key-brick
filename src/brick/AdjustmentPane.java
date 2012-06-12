@@ -399,7 +399,6 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 			if(ret == JFileChooser.APPROVE_OPTION){
 				String loc = jfc.getSelectedFile().getName();
 				try {
-					
 					ra.addNewBrick(loc);
 				} catch (PartNotFoundException pnfe) {
 					JOptionPane.showMessageDialog(null, "Cannot find model \"" + loc + "\"");
@@ -407,7 +406,9 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 					JOptionPane.showMessageDialog(null, "Cannot locate ldconfig.ldr");
 				} 
 			}
-			
+		} else if("save".equals(command)){
+			if(!Animator.saveMovieToFile(fpw.getAllFrames())){
+			}
 		}
 		ra.repaint();
 		

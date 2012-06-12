@@ -215,29 +215,25 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 	}
 	
 	private void change(){
+		if(frames.size() > 1){
+			swapRight.setEnabled(true);
+			next.setEnabled(true);
+			last.setEnabled(true);
+			swapLeft.setEnabled(true);
+			first.setEnabled(true);
+			prev.setEnabled(true);
+		}
 		if(curFrame >= frames.size() - 1){
 			curFrame = frames.size() - 1;
 			next.setEnabled(false);
 			last.setEnabled(false);
 			swapRight.setEnabled(false);
-			if(frames.size() > 1){
-				swapLeft.setEnabled(true);
-				first.setEnabled(true);
-				prev.setEnabled(true);
-				swapLeft.setEnabled(true);
-			}
 		}
 		if(curFrame <= 0){
 			curFrame = 0;
 			first.setEnabled(false);
 			prev.setEnabled(false);
 			swapLeft.setEnabled(false);
-			if(frames.size() > 1){
-				swapRight.setEnabled(true);
-				next.setEnabled(true);
-				last.setEnabled(true);
-				swapRight.setEnabled(true);
-			}
 		}
 		if(frames.size() == 0){
 			delete.setEnabled(false);
@@ -295,14 +291,11 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 		} else if(command.equals("duplicate")){
 			duplicateFrame();
 		}
-		
-		
-		
 	}
 
 	private void duplicateFrame() {
-		// TODO Auto-generated method stub
-		
+		frames.add(curFrame + 1, getCurrentFrame().clone());
+		change();
 	}
 
 	private void deleteFrame() {
@@ -311,7 +304,7 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 	}
 
 	private void swapRight() {
-		Keyframe mid = frames.get(curFrame);
+		Keyframe mid = getCurrentFrame();
 		frames.set(curFrame, frames.get(curFrame + 1));
 		frames.set(curFrame + 1, mid);
 		curFrame++;
@@ -319,7 +312,7 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 	}
 
 	private void swapLeft() {
-		Keyframe mid = frames.get(curFrame);
+		Keyframe mid = getCurrentFrame();
 		frames.set(curFrame, frames.get(curFrame - 1));
 		frames.set(curFrame - 1, mid);
 		curFrame--;

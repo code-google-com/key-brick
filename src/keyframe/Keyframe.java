@@ -22,6 +22,9 @@ public class Keyframe {
 	private NonBrick[] nBricks;
 	private int framesBefore;
 	
+	//I want to be able to make an empty Keyframe, but not let others do so.
+	private Keyframe(){}
+	
 	public Keyframe(BrickPanel panel, int framesBefore){
 		this.framesBefore = framesBefore;
 		ArrayList<BrickObject> bricks = panel.getBricks();
@@ -99,6 +102,14 @@ public class Keyframe {
 		//Color code might be off for selected bricks. Remove this when it's fixed.
 		public int colorCode;
 		
+		public NonBrick(NonBrick n){
+			translation = new SimpleVector(n.translation);
+			rotationPivot = new SimpleVector(n.rotationPivot);
+			rotation = n.rotation.cloneMatrix();
+			colorCode = n.colorCode;
+			name = n.name;
+		}
+		
 		public NonBrick(BrickObject obj, BrickPanel panel){
 			translation = new SimpleVector(obj.getTranslation());
 			rotationPivot = new SimpleVector(obj.getRotationPivot());
@@ -122,6 +133,12 @@ public class Keyframe {
 		public SimpleVector position;
 		public SimpleVector direction;
 		public SimpleVector up;
+		
+		public NonCamera(NonCamera cam){
+			position = new SimpleVector(cam.position);
+			direction = new SimpleVector(cam.direction);
+			up = new SimpleVector(cam.up);
+		}
 		
 		public NonCamera(Camera cam){
 			position = new SimpleVector(cam.getPosition());
@@ -244,5 +261,16 @@ public class Keyframe {
 			System.err.println("File failed to save.");
 			return false;
 		}
+	}
+	
+	public Keyframe clone(){
+		Keyframe out = new Keyframe();
+		out.nCam = new NonCamera(nCam);
+		out.nBricks = new NonBrick[nBricks.length];
+		for(int i = 0; i < nBricks.length; i++){
+			out.nBricks[i] = new NonBrick(nBricks[i]);
+		}
+		out.framesBefore = framesBefore;
+		return out;
 	}
 }
