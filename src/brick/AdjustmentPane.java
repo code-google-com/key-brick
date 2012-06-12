@@ -40,8 +40,8 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 	private JTextField obji, objx, objy, objz, objc;
 	private JButton addButton, objrx, objry, objrz;
 	private JButton shiftx, shifty, shiftz;
-	private JButton takeFrame, restoreFrame, clear;
-	private JButton play;
+	private JButton takeFrame, restoreFrame, clear, play;
+	private JButton movLoad, movSave;
 	private JPanel pos, rot, obj;
 	private float transStep = 1f;
 	private float angle = (float)Math.PI / 4;
@@ -130,44 +130,52 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		//add(addButton);
 		addButton.addActionListener(this);
 		
-		JPanel com4 = new JPanel();
+		JPanel rotButtons = new JPanel();
 		objrx = new JButton("Rotate X"); objry = new JButton("Rotate Y"); objrz = new JButton("Rotate Z");
 		objrx.setActionCommand("xrot"); objry.setActionCommand("yrot"); objrz.setActionCommand("zrot");
 		objrx.setMaximumSize(objrx.getPreferredSize());
 		objry.setMaximumSize(objry.getPreferredSize());
 		objrz.setMaximumSize(objrz.getPreferredSize());
-		com4.add(objrx); com4.add(objry); com4.add(objrz);
+		rotButtons.add(objrx); rotButtons.add(objry); rotButtons.add(objrz);
 		objrx.addActionListener(this); objry.addActionListener(this); objrz.addActionListener(this);
-		com4.setLayout(new BoxLayout(com4, BoxLayout.X_AXIS));
+		rotButtons.setLayout(new BoxLayout(rotButtons, BoxLayout.X_AXIS));
 		
-		JPanel com5 = new JPanel();
+		JPanel transButtons = new JPanel();
 		shiftx = new JButton("Translate X"); shifty = new JButton("Translate Y"); shiftz = new JButton("Translate Z");
 		shiftx.setActionCommand("xtran"); shifty.setActionCommand("ytran"); shiftz.setActionCommand("ztran");
 		shiftx.setMaximumSize(shiftx.getPreferredSize());
 		shifty.setMaximumSize(shifty.getPreferredSize());
 		shiftz.setMaximumSize(shiftz.getPreferredSize());
-		com5.add(shiftx); com5.add(shifty); com5.add(shiftz);
+		transButtons.add(shiftx); transButtons.add(shifty); transButtons.add(shiftz);
 		shiftx.addActionListener(this); shifty.addActionListener(this); shiftz.addActionListener(this);
-		com5.setLayout(new BoxLayout(com5, BoxLayout.X_AXIS));
+		transButtons.setLayout(new BoxLayout(transButtons, BoxLayout.X_AXIS));
 		
-		JPanel com6 = new JPanel();
+		JPanel frameSettings = new JPanel();
 		takeFrame = new JButton("Take Frame"); restoreFrame = new JButton("Restore Last Frame"); clear = new JButton("Clear");
 		takeFrame.setActionCommand("take"); restoreFrame.setActionCommand("restore"); clear.setActionCommand("clear");
-		com6.add(takeFrame); com6.add(restoreFrame); com6.add(clear);
+		frameSettings.add(takeFrame); frameSettings.add(restoreFrame); frameSettings.add(clear);
 		takeFrame.addActionListener(this);
 		restoreFrame.addActionListener(this);
 		clear.addActionListener(this);
 		
 		play = new JButton("Play");
 		play.setActionCommand("play");
-		com6.add(play);
+		frameSettings.add(play);
 		play.addActionListener(this);
-		com6.setLayout(new BoxLayout(com6, BoxLayout.X_AXIS));
+		frameSettings.setLayout(new BoxLayout(frameSettings, BoxLayout.X_AXIS));
+		
+		JPanel movieSettings =  new JPanel();
+		movSave = new JButton("Save Movie"); movLoad = new JButton("Load Movie");
+		movSave.setActionCommand("msave"); movLoad.setActionCommand("mload");
+		movieSettings.add(movSave); movieSettings.add(movLoad);
+		movSave.addActionListener(this);
+		movLoad.addActionListener(this);
+		movieSettings.setLayout(new BoxLayout(movieSettings, BoxLayout.X_AXIS));
 		
 		contents.setLayout(new BoxLayout(contents, BoxLayout.Y_AXIS));
 		contents.add(pos); contents.add(rot); contents.add(obj);
 		contents.add(addButton);
-		contents.add(com4); contents.add(com5); contents.add(com6);
+		contents.add(rotButtons); contents.add(transButtons); contents.add(frameSettings);
 		
 		add(contents);
 		
@@ -367,6 +375,8 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		} else if(command.equals("clear")){
 			ra.removeAllObjects();
 		} else if(command.equals("play")){
+			//Play a movie. That is, play all the current Keyframes in order.
+			//Has to be run in a new thread so that the graphics can update.
 			new Thread(new Runnable() {
 	            public void run() {
 	            	ArrayList<Keyframe> frames = fpw.getAllFrames();

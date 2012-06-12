@@ -45,44 +45,19 @@ public class Keyframe {
 		if(!line.equals("CAMERA")){
 			throw new Exception("No camera information in file.");
 		}else{
-			String reg = "\\,";
-			String[] vals = br.readLine().substring(1).split(reg);
-			SimpleVector position = new SimpleVector(Float.parseFloat(vals[0]), Float.parseFloat(vals[1]), Float.parseFloat(vals[2].substring(0, vals[2].length() - 1)));
-			vals = br.readLine().substring(1).split(reg);
-			SimpleVector direction = new SimpleVector(Float.parseFloat(vals[0]), Float.parseFloat(vals[1]), Float.parseFloat(vals[2].substring(0, vals[2].length() - 1)));
-			vals = br.readLine().substring(1).split(reg);
-			SimpleVector up = new SimpleVector(Float.parseFloat(vals[0]), Float.parseFloat(vals[1]), Float.parseFloat(vals[2].substring(0, vals[2].length() - 1)));
-			nCam = new NonCamera(position, direction, up);
-			//nCam = new NonCamera(a, b, c);//new SimpleVector(scan.nextFloat(), scan.nextFloat(), scan.nextFloat()),
-					         	 //new SimpleVector(scan.nextFloat(), scan.nextFloat(), scan.nextFloat()),
-					         	 //new SimpleVector(scan.nextFloat(), scan.nextFloat(), scan.nextFloat()));
+			nCam = parseCamera(new String[]{line,  br.readLine(), br.readLine(), br.readLine()});
 		}
 		
 		ArrayList<NonBrick> bricks = new ArrayList<Keyframe.NonBrick>();
 		
 		line = br.readLine();
 		while(line.equals("BRICK")){
-			String name = br.readLine();
-			int colorCode = Integer.parseInt(br.readLine());
-			String reg = "\\,";
-			String[] vals = br.readLine().substring(1).split(reg);
-			SimpleVector trans =  new SimpleVector(Float.parseFloat(vals[0]), Float.parseFloat(vals[1]), Float.parseFloat(vals[2].substring(0, vals[2].length() - 1)));
-			vals = br.readLine().substring(1).split(reg);
-			SimpleVector rPivot =  new SimpleVector(Float.parseFloat(vals[0]), Float.parseFloat(vals[1]), Float.parseFloat(vals[2].substring(0, vals[2].length() - 1)));
-			br.readLine();//Open parenthesis.
+			NonBrick nb = parseBrick(
+					new String[]{line, br.readLine(), br.readLine(), br.readLine(), br.readLine(), 
+								 	   br.readLine(), br.readLine(), br.readLine(), br.readLine(),
+								 	   br.readLine(), br.readLine()});
 			
-			//I don't like this. At all.
-			//Also, dump is totally the official word for this.
-			Matrix rot = new Matrix();
-			vals = (br.readLine() + br.readLine() + br.readLine() + br.readLine()).trim().split("\\s");
-			
-			float[] dump = new float[vals.length];
-			for(int i = 0; i < 16; i++)
-				dump[i] = Float.parseFloat(vals[i]);
-			
-			rot.fillDump(dump);
-			bricks.add(new NonBrick(name, colorCode, trans, rPivot, rot));
-			br.readLine();//Close parenthesis
+			bricks.add(nb);
 			line = br.readLine();
 		}
 		
@@ -181,6 +156,83 @@ public class Keyframe {
 		return output.toString();
 	}
 	
+	//Takes a string representation of a NonBrick object and returns a NonBrick object.
+	//Format of the input needs to match exactly the output of calling toString() on a 
+	//NonBrick instance.
+	public NonBrick parseBrick(String[] data){
+		if(!data[0].equals("BRICK")){
+			System.out.println("Bad brick info");
+			for(String s : data){
+				System.out.print(s + " | ");
+			}
+			System.out.println();
+			return null;
+		}
+		return new NonBrick(data[1], Integer.parseInt(data[2]),	parseVector(data[3]),
+							parseVector(data[4]), parseMatrix(new String[]{data[6], data[7], data[8], data[9]}));
+	}
+	
+	//Takes a string representation of a NonCamera object and returns a NonCamera instance.
+	//Format of the input needs to match exactly the output of calling toString() on a 
+	//NonCamera instance.
+	public NonCamera parseCamera(String[] data){
+		if(!data[0].equals("CAMERA")){
+			System.out.println("Bad camera info");
+			for(String s : data){
+				System.out.print(s + " | ");
+			}
+			System.out.println();
+			return null;
+		}
+		return new NonCamera(parseVector(data[1]), parseVector(data[2]), parseVector(data[3]));
+	}
+	
+	//Takes a string of the form (x,y,z) and returns a vector representing it.
+	//x, y, and z can be any valid floats, and no spaces should be present 
+	public static SimpleVector parseVector(String val){
+		String[] vals = val.substring(1).split("\\,");
+		if(vals.length != 3){
+			System.out.println("Bad vector info");
+			for(String s : vals){
+				System.out.print(s + " | ");
+			}
+			System.out.println();
+			return null;
+		}
+		return new SimpleVector(Float.parseFloat(vals[0]), Float.parseFloat(vals[1]),
+								Float.parseFloat(vals[2].substring(0, vals[2].length() - 1)));
+	}
+	
+	//Takes a string of the weird form
+	//	1.0	0.0	0.0	0.0
+	//	0.0	1.0	0.0	0.0
+	//	0.0	0.0	1.0	0.0
+	//	0.0	0.0	0.0	1.0
+	//and returns the Matrix that it represents.
+	//These are the middle lines of calling toString() on a Matrix instance.
+	//These EXCLUDE the opening and closing parentheses. Whitespace gets trimmed,
+	//so beginning tabs are optional, and inner whitespace can be tabs or spaces.
+	public static Matrix parseMatrix(String[] lines){
+		if(lines.length != 4){
+			System.out.println("Bad Matrix info");
+			for(String s : lines){
+				System.out.print(s + " | ");
+			}
+			System.out.println();
+			return null;
+		}
+		float[] dump = new float[16];
+		for(int i = 0; i < 4; i++){
+			String[] vals = lines[i].trim().split("\\s");
+			for(int j = 0; j < 4; j++){
+				dump[i * 4 + j] = Float.parseFloat(vals[j]);
+			}
+		}
+		Matrix out = new Matrix();
+		out.setDump(dump);
+		return out;
+	}
+	
 	public boolean saveToFile(String filename){
 		File f = new File(filename.endsWith(".kf") ? filename : filename + ".kf");
 		try {
@@ -192,7 +244,5 @@ public class Keyframe {
 			System.err.println("File failed to save.");
 			return false;
 		}
-		
 	}
-	
 }

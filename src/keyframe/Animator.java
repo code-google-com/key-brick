@@ -136,9 +136,11 @@ public class Animator {
 			BrickObject temp;
 			for(NonBrick brick : scene){
 				temp = panel.addNewBrick(brick.name);
+				temp.build();
 				temp.translate(brick.translation);
+				System.out.println("Test: " + brick.rotationPivot);
 				temp.setRotationPivot(new SimpleVector(brick.rotationPivot));
-				temp.setRotationMatrix(brick.rotation.cloneMatrix());
+				temp.getRotationMatrix().matMul(brick.rotation);
 				temp.setColorCode(brick.colorCode);
 			}
 			

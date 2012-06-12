@@ -3,7 +3,6 @@ package keyframe;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -134,6 +133,7 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 		setMinimumSize(getPreferredSize());
 		setMaximumSize(getPreferredSize());
 		setVisible(true);
+		change();
 		//int size = first.getWidth() + last.getWidth() + next.getWidth() + prev.getWidth();
 		System.out.println("SIZE IS " + information.getHeight());
 		//sizingFix();
@@ -174,28 +174,16 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 	private void next(){
 		curFrame++;
 		change();
-		if(frames.size() > 0){
-			prev.setEnabled(true);
-			first.setEnabled(true);
-		}
 	}
 	
 	private void prev(){
 		curFrame--;
 		change();
-		if(frames.size() > 1){
-			next.setEnabled(true);
-			last.setEnabled(true);
-		}
 	}
 	
 	private void first(){
 		curFrame = 0;
 		change();
-		if(frames.size() > 1){
-			next.setEnabled(true);
-			last.setEnabled(true);
-		}
 	}
 	
 	public void toStart(){
@@ -211,32 +199,56 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 		return frames.get(curFrame);
 	}
 	
+	public int getCurrentFrameIndex(){
+		return curFrame;
+	}
+	
 	public ArrayList<Keyframe> getAllFrames(){
 		return frames;
 	}
 	
 	//I find this funny, because it's faster by a tiny, tiny bit than setting it directly.
+	//Also, this sets the current frame to be the last one
 	private void last(){
 		curFrame = Integer.MAX_VALUE;
 		change();
-		if(frames.size() > 1){
-			first.setEnabled(true);
-			prev.setEnabled(true);
-		}
 	}
 	
 	private void change(){
-		if(curFrame <= 0){
-			curFrame = 0;
-			first.setEnabled(false);
-			prev.setEnabled(false);
-		}
 		if(curFrame >= frames.size() - 1){
 			curFrame = frames.size() - 1;
 			next.setEnabled(false);
 			last.setEnabled(false);
+			swapRight.setEnabled(false);
+			if(frames.size() > 1){
+				swapLeft.setEnabled(true);
+				first.setEnabled(true);
+				prev.setEnabled(true);
+				swapLeft.setEnabled(true);
+			}
 		}
-		new Animator(preview).restoreFromFrame(frames.get(curFrame));
+		if(curFrame <= 0){
+			curFrame = 0;
+			first.setEnabled(false);
+			prev.setEnabled(false);
+			swapLeft.setEnabled(false);
+			if(frames.size() > 1){
+				swapRight.setEnabled(true);
+				next.setEnabled(true);
+				last.setEnabled(true);
+				swapRight.setEnabled(true);
+			}
+		}
+		if(frames.size() == 0){
+			delete.setEnabled(false);
+			duplicate.setEnabled(false);
+			preview.removeAllObjects();
+			preview.repaint();
+		} else{
+			delete.setEnabled(true);
+			duplicate.setEnabled(true);
+			new Animator(preview).restoreFromFrame(frames.get(curFrame));
+		}
 	}
 	
 	private void saveFrame(){
@@ -246,17 +258,17 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 	private void addFrame(){
 		JFileChooser fc = new JFileChooser();
 		FileNameExtensionFilter fnef = new FileNameExtensionFilter("KeyFrame frame files (.kf)", "kf");
-		//fc.setFileFilter(fnef);
-		//int ret = fc.showOpenDialog(null);
-		//if(ret == JFileChooser.APPROVE_OPTION){
+		fc.setFileFilter(fnef);
+		int ret = fc.showOpenDialog(null);
+		if(ret == JFileChooser.APPROVE_OPTION){
 			try {
-				Keyframe kf = new Keyframe(new File("C:\\Users\\Riley\\Javaworkspace\\key-brick\\frame_0.kf"));//fc.getSelectedFile());
+				Keyframe kf = new Keyframe(fc.getSelectedFile());
 				addFrame(kf);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null, e.getMessage());
 				e.printStackTrace();
 			}
-		//}
+		}
 	}
 	
 	@Override
@@ -274,10 +286,44 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 			saveFrame();
 		} else if(command.equals("add_frame")){
 			addFrame();
+		} else if(command.equals("left")){
+			swapLeft();
+		} else if(command.equals("right")){
+			swapRight();
+		} else if(command.equals("delete")){
+			deleteFrame();
+		} else if(command.equals("duplicate")){
+			duplicateFrame();
 		}
 		
 		
 		
+	}
+
+	private void duplicateFrame() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void deleteFrame() {
+		frames.remove(curFrame);
+		change();
+	}
+
+	private void swapRight() {
+		Keyframe mid = frames.get(curFrame);
+		frames.set(curFrame, frames.get(curFrame + 1));
+		frames.set(curFrame + 1, mid);
+		curFrame++;
+		change();
+	}
+
+	private void swapLeft() {
+		Keyframe mid = frames.get(curFrame);
+		frames.set(curFrame, frames.get(curFrame - 1));
+		frames.set(curFrame - 1, mid);
+		curFrame--;
+		change();
 	}
 
 }
