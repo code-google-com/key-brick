@@ -35,33 +35,32 @@ public class Keyframe {
 		}
 	}
 	
-	public Keyframe(File f) throws Exception{
-		BufferedReader br = new BufferedReader(new FileReader(f));
-		String line = br.readLine();
+	public Keyframe(BufferedReader source) throws Exception {
+		String line = source.readLine();
 		if(line == null) throw new Exception("Empty file.");
 		if(!line.equals("SETTINGS")){
 			throw new Exception("Not a keyframe file.");
 		}
-		framesBefore = Integer.parseInt(br.readLine());
+		framesBefore = Integer.parseInt(source.readLine());
 		
-		line = br.readLine();
+		line = source.readLine();
 		if(!line.equals("CAMERA")){
 			throw new Exception("No camera information in file.");
 		}else{
-			nCam = parseCamera(new String[]{line,  br.readLine(), br.readLine(), br.readLine()});
+			nCam = parseCamera(new String[]{line,  source.readLine(), source.readLine(), source.readLine(), source.readLine()});
 		}
 		
 		ArrayList<NonBrick> bricks = new ArrayList<Keyframe.NonBrick>();
 		
-		line = br.readLine();
+		line = source.readLine();
 		while(line.equals("BRICK")){
 			NonBrick nb = parseBrick(
-					new String[]{line, br.readLine(), br.readLine(), br.readLine(), br.readLine(), 
-								 	   br.readLine(), br.readLine(), br.readLine(), br.readLine(),
-								 	   br.readLine(), br.readLine()});
+					new String[]{line, source.readLine(), source.readLine(), source.readLine(), source.readLine(), 
+								 	   source.readLine(), source.readLine(), source.readLine(), source.readLine(),
+								 	   source.readLine(), source.readLine()});
 			
 			bricks.add(nb);
-			line = br.readLine();
+			line = source.readLine();
 		}
 		
 		//Because toArray() is dumb...
@@ -69,16 +68,11 @@ public class Keyframe {
 		for(int b = 0; b < nBricks.length; b++){
 			nBricks[b] = bricks.get(b);
 		}
-		
-		
-//		
-//		this.framesBefore = framesBefore;
-//		ArrayList<BrickObject> bricks = panel.getBricks();
-//		nCam = new NonCamera(panel.getWorld().getCamera());
-//		nBricks = new NonBrick[bricks.size()];
-//		for(int i = 0; i < nBricks.length; i++){
-//			nBricks[i] = new NonBrick(bricks.get(i), panel);
-//		}
+		source.close();
+	}
+	
+	public Keyframe(File f) throws Exception{
+		this(new BufferedReader(new FileReader(f)));
 	}
 	
 	public NonBrick[] getBricksInScene(){
@@ -133,23 +127,27 @@ public class Keyframe {
 		public SimpleVector position;
 		public SimpleVector direction;
 		public SimpleVector up;
+		public SimpleVector side;
 		
 		public NonCamera(NonCamera cam){
 			position = new SimpleVector(cam.position);
 			direction = new SimpleVector(cam.direction);
 			up = new SimpleVector(cam.up);
+			side = new SimpleVector(cam.side);
 		}
 		
 		public NonCamera(Camera cam){
 			position = new SimpleVector(cam.getPosition());
 			direction = new SimpleVector(cam.getDirection());
 			up = new SimpleVector(cam.getUpVector());
+			side = new SimpleVector(cam.getSideVector());
 		}
 		
-		public NonCamera(SimpleVector position, SimpleVector direction, SimpleVector up){
+		public NonCamera(SimpleVector position, SimpleVector direction, SimpleVector up, SimpleVector side){
 			this.position = position;
 			this.direction = direction;
 			this.up = up;
+			this.side = side;
 		}
 	}
 	
@@ -161,6 +159,7 @@ public class Keyframe {
 		output.append(getCameraInfo().position + "\n");
 		output.append(getCameraInfo().direction + "\n");
 		output.append(getCameraInfo().up + "\n");
+		output.append(getCameraInfo().side + "\n");
 		for(NonBrick brick : getBricksInScene()){
 			output.append("BRICK\n");
 			output.append(brick.name + "\n");
@@ -201,7 +200,7 @@ public class Keyframe {
 			System.out.println();
 			return null;
 		}
-		return new NonCamera(parseVector(data[1]), parseVector(data[2]), parseVector(data[3]));
+		return new NonCamera(parseVector(data[1]), parseVector(data[2]), parseVector(data[3]), parseVector(data[4]));
 	}
 	
 	//Takes a string of the form (x,y,z) and returns a vector representing it.
@@ -258,7 +257,7 @@ public class Keyframe {
 			bf.close();
 			return true;
 		} catch (IOException e) {
-			System.err.println("File failed to save.");
+			System.err.println(filename + " failed to save.");
 			return false;
 		}
 	}

@@ -50,6 +50,7 @@ public class BrickPanel extends JPanel {
 		addMouseListener(new MouseSelectController(this, world, buffer, 10000));
 		addMouseListener(mrc);
 		addMouseMotionListener(mrc);
+		
 	}
 
 	public BrickObject addNewBrick(String fileLoc) throws PartNotFoundException, FileNotFoundException {

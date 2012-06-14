@@ -2,17 +2,20 @@ package keyframe;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import keyframe.Keyframe.NonBrick;
@@ -74,6 +77,51 @@ public class Animator {
 		//float timeStep = (float)seconds / (float)steps;
 		//float timePassed = 0;
 		
+		//Because of the previous assumption, we also can assume the camera is where it should be.
+		NonCamera cstart = frame1.getCameraInfo(); 
+		Camera cam = panel.getWorld().getCamera();
+		NonCamera cend = frame2.getCameraInfo();
+		
+		
+		SimpleVector dirNorm = new SimpleVector(cend.direction);
+		float dirrot = 0;
+		if(!cstart.direction.equals(cend.direction)){
+			dirNorm.calcCross(cstart.direction).normalize();
+			float angle = cstart.direction.calcAngle(cend.direction);
+			dirrot = angle/(float)steps;
+		}
+
+		//Basically, if the normal vector is negatively oriented.
+		//Another definition is whether the start vector is to the left of the end vector.
+		//And yet another is just whether the angle should be positive or negative.
+		if(dirNorm.calcDot(cstart.side) < 0) dirrot = -dirrot;
+		
+		SimpleVector upNorm = new SimpleVector(cend.up);
+		float uprot = 0;
+		if(!cstart.up.equals(cend.up)){
+			upNorm.calcCross(cstart.up).normalize();
+			float angle = cstart.up.calcAngle(cend.up);
+			uprot = angle/(float)steps;
+		}
+		
+		if(upNorm.calcDot(cstart.direction) < 0) uprot = -uprot;
+		
+		SimpleVector sideNorm = new SimpleVector(cstart.side);
+		float siderot = 0;
+		if(!cstart.side.equals(cend.side)){
+			sideNorm.calcCross(cend.side);
+			float angle = cstart.side.calcAngle(cstart.side);
+			siderot = Math.abs(angle/(float)steps);
+		}
+		
+		if(sideNorm.calcDot(cstart.direction) < 0) siderot = -siderot;
+
+		System.out.println("Rotations: " + dirrot + ", " + uprot);// + ", " + siderot);
+		System.out.println(dirNorm + " | " + upNorm);
+		System.out.println(cstart.direction.calcAngle(cend.direction) + " | " + cend.direction.calcAngle(cstart.direction));
+		System.out.println(cstart.up.calcAngle(cend.up) + " | " + cend.up.calcAngle(cstart.up));
+		
+		
 		while(step < steps){
 			long startTime = System.currentTimeMillis();
 			NonBrick start;
@@ -84,12 +132,14 @@ public class Animator {
 				brick = bricks.get(i);
 				start = startBricks[i];
 				end = endBricks[i];
+				
 				if(!start.rotation.equals(end.rotation)){
 					System.out.println("Updating rotation");
 					Matrix inBetween = new Matrix(); 
 					inBetween.interpolate(start.rotation, end.rotation, progress);
 					brick.setRotationMatrix(inBetween.cloneMatrix());
 				}
+				
 				if(!start.translation.equals(end.translation)){
 					SimpleVector change = new SimpleVector(end.translation);
 					change.sub(start.translation);
@@ -100,6 +150,12 @@ public class Animator {
 					System.out.println(brick.getTranslation());
 				}
 			}
+			cam.rotateCameraAxis(upNorm, uprot);
+			cam.rotateCameraAxis(dirNorm, dirrot);
+			cam.rotateCameraAxis(sideNorm, siderot);
+			
+			
+			
 			step++;
 			//System.out.println("step");
 			//this attempts to keep a uniform frame length
@@ -138,6 +194,11 @@ public class Animator {
 			}
 			
 		}
+		
+		System.out.println("Wanted | Acheived");
+		System.out.println(cend.direction + " | " + cam.getDirection());
+		System.out.println(cend.up + " | " + cam.getUpVector());
+		System.out.println(cend.side + " | " + cam.getSideVector());
 	}
 	
 	public void restoreFromFrame(Keyframe frame){
@@ -154,14 +215,12 @@ public class Animator {
 				temp.setRotationPivot(new SimpleVector(brick.rotationPivot));
 				temp.getRotationMatrix().matMul(brick.rotation);
 				temp.setColorCode(brick.colorCode);
+//				temp.rebuild();
 			}
 			
 			NonCamera nc = frame.getCameraInfo();
 			Camera cam = new Camera();
 			cam.setPosition(nc.position);
-			SimpleVector lookAt = new SimpleVector(nc.position);
-			lookAt.add(nc.direction);
-			lookAt.normalize();
 			cam.setOrientation(nc.direction, nc.up);
 			world.setCameraTo(cam);
 			
@@ -173,61 +232,111 @@ public class Animator {
 		}
 	}
 	
+	
+	//Save a movie as a zipped up file of keyframe files.
 	public static boolean saveMovieToFile(ArrayList<Keyframe> frames){
 		String name = JOptionPane.showInputDialog("Name of movie: ");
+		if(name == null) return false;
 		name = name.split("\\.", 2)[0];
 		
+		boolean ret = true;
 		
-		
-		File f = new File(name.endsWith(".kf") ? name : name + ".kf");
-		try {
-			BufferedWriter bf = new BufferedWriter(new FileWriter(f));
-			bf.write("MOVIE");
-			//for(Keyframe kf : )
-			bf.close();
-			return true;
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Save failed.");
-			return false;
+		File fold = new File(name);// + ".kfm");
+		File out = new File(name + ".kfm");
+		File[] files = new File[frames.size()];
+		if(!fold.mkdir()){
+			System.out.println("Couldn't make folder.");
+			ret = false;
+		} else {
+			int i = 0;
+			try {
+				if(out.exists()){
+					out.delete();
+				}
+				out.createNewFile();
+				
+				BufferedInputStream origin = null;
+				FileOutputStream dest = new FileOutputStream(out);
+				ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(dest));
+				int BUFFER = 20480;
+				byte data[] = new byte[BUFFER];
+				
+				ZipEntry entry = null;
+				FileInputStream fi = null;
+				int count;
+				
+				
+				String path = fold.getAbsolutePath() + System.getProperty("file.separator") + name + "_";
+				for(; i < frames.size(); i++){
+					boolean b = frames.get(i).saveToFile(path + i + ".kf");
+					if(b){
+						files[i] = new File(path + i + ".kf");
+					} else {
+						System.out.println(i + "failed");
+						ret = false;
+						break;
+					}
+				}
+				
+				for(File f : files){
+					fi = new FileInputStream(f);
+					origin = new BufferedInputStream(fi, BUFFER);
+					entry = new ZipEntry(f.getName());
+					zip.putNextEntry(entry);
+					while((count = origin.read(data,0,BUFFER)) != -1){
+						zip.write(data,0,count);
+					}
+					count = 0;
+					origin.close();
+				}
+				
+				zip.close();
+				
+				
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null, "Save failed:\n" + e.getMessage());
+				return false;
+			} finally {
+				for(File f : files){
+					if(f != null && f.exists()) f.delete();
+				}
+				if(fold.exists()) fold.delete();
+			}
 		}
+		return ret;
 		
 	}
 	
-	public void zipEm(){
-		
-		
-		File directory = new File("");
-		 
-		File files[] = directory.listFiles();
-		 
-		try {
-			BufferedInputStream origin = null;
-			FileOutputStream dest = new FileOutputStream("");
-			ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(dest));
-			int BUFFER = 20480;
-			byte data[] = new byte[BUFFER];
-			
-			File f = null;
-			ZipEntry entry = null;
-			FileInputStream fi = null;
-			int count;
-			
-			// Iterate over the file list and add them to the zip file.
-			for (int i=0; i <files.length; i++) {
-				fi = new FileInputStream(files[i]);
-				origin = new BufferedInputStream(fi, BUFFER);
-				entry = new ZipEntry(files[i].getName());
-				zip.putNextEntry(entry);
-				
-				while((count = origin.read(data,0,BUFFER)) != -1){
-					zip.write(data,0,count);
+	@SuppressWarnings("unchecked")
+	public static ArrayList<Keyframe> openMovieFromDisk(){
+		ArrayList<Keyframe> frames = new ArrayList<Keyframe>();
+		JFileChooser jfc = new JFileChooser();
+		int chosen = jfc.showOpenDialog(null);
+		if(chosen == JFileChooser.APPROVE_OPTION){
+			File movie = jfc.getSelectedFile();
+			ZipFile zf;
+			BufferedReader br;
+			try {
+				zf = new ZipFile(movie);
+				for(Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries(); entries.hasMoreElements();) {
+					br = new BufferedReader(new InputStreamReader(zf.getInputStream(entries.nextElement())));
+					frames.add(new Keyframe(br));
+					br.close();
 				}
-				count = 0;
-				origin.close();
+				zf.close();
+			} catch (FileNotFoundException e) {
+				JOptionPane.showMessageDialog(null, "File not found exception:\n" + e.getMessage());
+				return null;
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null, "Open failed:\n" + e.getMessage());
+				return null;
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Keyframe exception:\n" + e.getMessage());
+				return null;
 			}
-			zip.close();
+		} else{
+			return null;
 		}
-		catch (Exception e){
-		}
+		return frames;
 	}
 }

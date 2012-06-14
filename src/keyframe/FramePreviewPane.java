@@ -214,6 +214,11 @@ public class FramePreviewPane extends JFrame implements ActionListener {
 		change();
 	}
 	
+	public void newMovie(ArrayList<Keyframe> frames){
+		this.frames = frames;
+		change();
+	}
+	
 	private void change(){
 		if(frames.size() > 1){
 			swapRight.setEnabled(true);

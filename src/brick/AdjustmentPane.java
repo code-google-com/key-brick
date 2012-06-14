@@ -142,7 +142,7 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		
 		JPanel transButtons = new JPanel();
 		shiftx = new JButton("Translate X"); shifty = new JButton("Translate Y"); shiftz = new JButton("Translate Z");
-		shiftx.setActionCommand("xtran"); shifty.setActionCommand("ytran"); shiftz.setActionCommand("ztran");
+		shiftx.setActionCommand("xtran"); shifty.setActionCommand("ytran"); shiftz.setActionCommand("save");//ztran");
 		shiftx.setMaximumSize(shiftx.getPreferredSize());
 		shifty.setMaximumSize(shifty.getPreferredSize());
 		shiftz.setMaximumSize(shiftz.getPreferredSize());
@@ -176,6 +176,7 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		contents.add(pos); contents.add(rot); contents.add(obj);
 		contents.add(addButton);
 		contents.add(rotButtons); contents.add(transButtons); contents.add(frameSettings);
+		contents.add(movieSettings);
 		
 		add(contents);
 		
@@ -209,8 +210,8 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		zrot.setText("" + dir.z);
 		
 		int val = Integer.parseInt(obji.getText());
-		if(val >= numBricks) val = numBricks - 1;
-		if(numBricks != 0){
+		if(numBricks > 0){
+			if(val >= numBricks) val = numBricks - 1;
 			
 			chosen = ra.getObject(val);
 			//ra.setSelectedBrick(chosen);
@@ -339,7 +340,6 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 			} else {
 				val.setText("" + (t + c));
 			}
-			
 		}
 		
 		private void setObjectVal(int i){
@@ -406,8 +406,13 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 					JOptionPane.showMessageDialog(null, "Cannot locate ldconfig.ldr");
 				} 
 			}
-		} else if("save".equals(command)){
+		} else if("msave".equals(command)){
 			if(!Animator.saveMovieToFile(fpw.getAllFrames())){
+			}
+		} else if("mload".equals(command)){
+			ArrayList<Keyframe> frames = Animator.openMovieFromDisk();
+			if(frames != null){
+				fpw.newMovie(frames);
 			}
 		}
 		ra.repaint();
