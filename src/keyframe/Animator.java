@@ -78,48 +78,49 @@ public class Animator {
 		//float timePassed = 0;
 		
 		//Because of the previous assumption, we also can assume the camera is where it should be.
-		NonCamera cstart = frame1.getCameraInfo(); 
-		Camera cam = panel.getWorld().getCamera();
-		NonCamera cend = frame2.getCameraInfo();
-		
-		
-		SimpleVector dirNorm = new SimpleVector(cend.direction);
-		float dirrot = 0;
-		if(!cstart.direction.equals(cend.direction)){
-			dirNorm.calcCross(cstart.direction).normalize();
-			float angle = cstart.direction.calcAngle(cend.direction);
-			dirrot = angle/(float)steps;
-		}
-
-		//Basically, if the normal vector is negatively oriented.
-		//Another definition is whether the start vector is to the left of the end vector.
-		//And yet another is just whether the angle should be positive or negative.
-		if(dirNorm.calcDot(cstart.side) < 0) dirrot = -dirrot;
-		
-		SimpleVector upNorm = new SimpleVector(cend.up);
-		float uprot = 0;
-		if(!cstart.up.equals(cend.up)){
-			upNorm.calcCross(cstart.up).normalize();
-			float angle = cstart.up.calcAngle(cend.up);
-			uprot = angle/(float)steps;
-		}
-		
-		if(upNorm.calcDot(cstart.direction) < 0) uprot = -uprot;
-		
-		SimpleVector sideNorm = new SimpleVector(cstart.side);
-		float siderot = 0;
-		if(!cstart.side.equals(cend.side)){
-			sideNorm.calcCross(cend.side);
-			float angle = cstart.side.calcAngle(cstart.side);
-			siderot = Math.abs(angle/(float)steps);
-		}
-		
-		if(sideNorm.calcDot(cstart.direction) < 0) siderot = -siderot;
-
-		System.out.println("Rotations: " + dirrot + ", " + uprot);// + ", " + siderot);
-		System.out.println(dirNorm + " | " + upNorm);
-		System.out.println(cstart.direction.calcAngle(cend.direction) + " | " + cend.direction.calcAngle(cstart.direction));
-		System.out.println(cstart.up.calcAngle(cend.up) + " | " + cend.up.calcAngle(cstart.up));
+//		NonCamera cstart = frame1.getCameraInfo(); 
+//		Camera cam = panel.getWorld().getCamera();
+//		NonCamera cend = frame2.getCameraInfo();
+//		
+//		
+//		SimpleVector dirNorm = new SimpleVector(cend.direction);
+//		float dirrot = 0;
+//		if(!cstart.direction.equals(cend.direction)){
+//			dirNorm.calcCross(cstart.direction).normalize();
+//			float angle = cstart.direction.calcAngle(cend.direction);
+//			dirrot = angle/(float)steps;
+//		}
+//
+//		//Basically, if the normal vector is negatively oriented.
+//		//Another definition is whether the start vector is to the left of the end vector.
+//		//And yet another is just whether the angle should be positive or negative.
+//		//BUG: the vector I'm using as the up vector isn't guaranteed to be the up vector... Lovely.
+//		if(dirNorm.calcDot(cstart.side) < 0) dirrot = -dirrot;
+//		
+//		SimpleVector upNorm = new SimpleVector(cend.up);
+//		float uprot = 0;
+//		if(!cstart.up.equals(cend.up)){
+//			upNorm.calcCross(cstart.up).normalize();
+//			float angle = cstart.up.calcAngle(cend.up);
+//			uprot = angle/(float)steps;
+//		}
+//		
+//		if(upNorm.calcDot(cstart.direction) < 0) uprot = -uprot;
+//		
+//		SimpleVector sideNorm = new SimpleVector(cstart.side);
+//		float siderot = 0;
+//		if(!cstart.side.equals(cend.side)){
+//			sideNorm.calcCross(cend.side);
+//			float angle = cstart.side.calcAngle(cstart.side);
+//			siderot = Math.abs(angle/(float)steps);
+//		}
+//		
+//		if(sideNorm.calcDot(cstart.direction) < 0) siderot = -siderot;
+//
+//		System.out.println("Rotations: " + dirrot + ", " + uprot);// + ", " + siderot);
+//		System.out.println(dirNorm + " | " + upNorm);
+//		System.out.println(cstart.direction.calcAngle(cend.direction) + " | " + cend.direction.calcAngle(cstart.direction));
+//		System.out.println(cstart.up.calcAngle(cend.up) + " | " + cend.up.calcAngle(cstart.up));
 		
 		
 		while(step < steps){
@@ -150,9 +151,9 @@ public class Animator {
 					System.out.println(brick.getTranslation());
 				}
 			}
-			cam.rotateCameraAxis(upNorm, uprot);
-			cam.rotateCameraAxis(dirNorm, dirrot);
-			cam.rotateCameraAxis(sideNorm, siderot);
+//			cam.rotateCameraAxis(upNorm, uprot);
+//			cam.rotateCameraAxis(dirNorm, dirrot);
+//			cam.rotateCameraAxis(sideNorm, siderot);
 			
 			
 			
@@ -195,10 +196,10 @@ public class Animator {
 			
 		}
 		
-		System.out.println("Wanted | Acheived");
-		System.out.println(cend.direction + " | " + cam.getDirection());
-		System.out.println(cend.up + " | " + cam.getUpVector());
-		System.out.println(cend.side + " | " + cam.getSideVector());
+//		System.out.println("Wanted | Acheived");
+//		System.out.println(cend.direction + " | " + cam.getDirection());
+//		System.out.println(cend.up + " | " + cam.getUpVector());
+//		System.out.println(cend.side + " | " + cam.getSideVector());
 	}
 	
 	public void restoreFromFrame(Keyframe frame){
