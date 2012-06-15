@@ -77,6 +77,7 @@ public class PartFactory {
 				}
 			}
 		}
+		s.close();
 		return result;
 	}
 }

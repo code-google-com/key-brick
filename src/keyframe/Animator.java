@@ -64,10 +64,10 @@ public class Animator {
 		float seconds = 2;
 		
 		if(frame2.getFramesBefore() != 0){
-			steps = frame2.getFramesBefore();
+			//steps = frame2.getFramesBefore();
 			seconds = (float)steps/(float)framerate;
 		}
-		System.out.println("Will take " + seconds + " second.");
+		System.out.println("Will take " + seconds + " seconds.");
 		
 		int framelength = 1000/framerate;
 		
@@ -135,7 +135,6 @@ public class Animator {
 				end = endBricks[i];
 				
 				if(!start.rotation.equals(end.rotation)){
-					System.out.println("Updating rotation");
 					Matrix inBetween = new Matrix(); 
 					inBetween.interpolate(start.rotation, end.rotation, progress);
 					brick.setRotationMatrix(inBetween.cloneMatrix());
@@ -145,10 +144,7 @@ public class Animator {
 					SimpleVector change = new SimpleVector(end.translation);
 					change.sub(start.translation);
 					change.scalarMul(1f/(float)steps);
-					System.out.println("cha: " + change);
-					System.out.print(brick.getTranslation() + " => ");
 					brick.translate(change);
-					System.out.println(brick.getTranslation());
 				}
 			}
 //			cam.rotateCameraAxis(upNorm, uprot);
@@ -174,7 +170,6 @@ public class Animator {
 			brick.translate(end.translation);
 			brick.setRotationMatrix(end.rotation.cloneMatrix());
 		}
-		
 		
 		if(endBricks.length > startBricks.length){
 			try {
@@ -212,11 +207,9 @@ public class Animator {
 				temp = panel.addNewBrick(brick.name);
 				temp.build();
 				temp.translate(brick.translation);
-				System.out.println("Test: " + brick.rotationPivot);
 				temp.setRotationPivot(new SimpleVector(brick.rotationPivot));
 				temp.getRotationMatrix().matMul(brick.rotation);
 				temp.setColorCode(brick.colorCode);
-//				temp.rebuild();
 			}
 			
 			NonCamera nc = frame.getCameraInfo();
@@ -232,7 +225,6 @@ public class Animator {
 			e.printStackTrace();
 		}
 	}
-	
 	
 	//Save a movie as a zipped up file of keyframe files.
 	public static boolean saveMovieToFile(ArrayList<Keyframe> frames){
@@ -266,7 +258,6 @@ public class Animator {
 				FileInputStream fi = null;
 				int count;
 				
-				
 				String path = fold.getAbsolutePath() + System.getProperty("file.separator") + name + "_";
 				for(; i < frames.size(); i++){
 					boolean b = frames.get(i).saveToFile(path + i + ".kf");
@@ -290,9 +281,7 @@ public class Animator {
 					count = 0;
 					origin.close();
 				}
-				
 				zip.close();
-				
 				
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(null, "Save failed:\n" + e.getMessage());

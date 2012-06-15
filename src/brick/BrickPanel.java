@@ -66,10 +66,12 @@ public class BrickPanel extends JPanel {
 	public void addObject(BrickObject obj) {
 		world.addObject(obj);
 		obj.setCulling(Object3D.CULLING_DISABLED);
+		obj.compile();
 	}
 	
 	public void removeObject(BrickObject obj){
 		world.removeObject(obj);
+		
 	}
 	
 	public World getWorld(){

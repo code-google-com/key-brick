@@ -32,13 +32,13 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 	private BrickObject chosen;
 	private int numBricks = 0;
 	//Misleading name: Actually number of objects in total, not just bricks.
-	
+	private String lastAdded;
 	private World world;
 	private BrickPanel ra;
 	private JTextField xpos, ypos, zpos;
 	private JTextField xrot, yrot, zrot;
 	private JTextField obji, objx, objy, objz, objc;
-	private JButton addButton, objrx, objry, objrz;
+	private JButton reAddButton, addButton, objrx, objry, objrz;
 	private JButton shiftx, shifty, shiftz;
 	private JButton takeFrame, restoreFrame, clear, play;
 	private JButton movLoad, movSave;
@@ -125,10 +125,18 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		pos.setMinimumSize(obj.getPreferredSize());
 		rot.setMinimumSize(obj.getPreferredSize());
 		
+		
+		JPanel addPanel = new JPanel();
+		reAddButton = new JButton("Redo last add");
+		reAddButton.setActionCommand("readd");
+		reAddButton.addActionListener(this);
 		addButton = new JButton("Add new brick");
 		addButton.setActionCommand("add");
 		//add(addButton);
 		addButton.addActionListener(this);
+		addPanel.add(addButton);
+		addPanel.add(reAddButton);
+		addPanel.setLayout(new BoxLayout(addPanel, BoxLayout.X_AXIS));
 		
 		JPanel rotButtons = new JPanel();
 		objrx = new JButton("Rotate X"); objry = new JButton("Rotate Y"); objrz = new JButton("Rotate Z");
@@ -174,7 +182,7 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		
 		contents.setLayout(new BoxLayout(contents, BoxLayout.Y_AXIS));
 		contents.add(pos); contents.add(rot); contents.add(obj);
-		contents.add(addButton);
+		contents.add(addPanel);
 		contents.add(rotButtons); contents.add(transButtons); contents.add(frameSettings);
 		contents.add(movieSettings);
 		
@@ -260,6 +268,18 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 		objc.setText("" + ra.getTrueColor(brick));
 		update();
 		updateCamera();
+	}
+	
+	public void redoLastAdd(){
+		if(lastAdded != null){
+			try {
+				ra.addNewBrick(lastAdded);
+			} catch (PartNotFoundException pnfe) {
+				JOptionPane.showMessageDialog(null, "Cannot find model \"" + lastAdded + "\"");
+			} catch (FileNotFoundException fnfe) {
+				JOptionPane.showMessageDialog(null, "Cannot locate ldconfig.ldr");
+			}
+		}
 	}
 	
 	//Badly named function. This actually applies all changes in the panel for both camera and object.
@@ -400,12 +420,15 @@ public class AdjustmentPane extends JFrame implements ActionListener {
 				String loc = jfc.getSelectedFile().getName();
 				try {
 					ra.addNewBrick(loc);
+					lastAdded = loc;
 				} catch (PartNotFoundException pnfe) {
 					JOptionPane.showMessageDialog(null, "Cannot find model \"" + loc + "\"");
 				} catch (FileNotFoundException fnfe) {
 					JOptionPane.showMessageDialog(null, "Cannot locate ldconfig.ldr");
 				} 
 			}
+		} else if("readd".equals(command)){
+			redoLastAdd();
 		} else if("msave".equals(command)){
 			if(!Animator.saveMovieToFile(fpw.getAllFrames())){
 			}

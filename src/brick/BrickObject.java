@@ -56,6 +56,7 @@ public class BrickObject extends Object3D {
 		super.addChild((Object3D)child);
 		if(!this.equals(child)) child.setGrouped(true);
 	}
+	
 	public void removeChild(BrickObject child){
 		super.removeChild((Object3D)child);
 		if(child.getParents().length == 0) child.setGrouped(false);
