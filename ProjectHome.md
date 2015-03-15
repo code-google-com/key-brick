@@ -1,0 +1,1 @@
+This project is designed to enable a user to use LDraw to create a series of CAD models.  It will then use keyframing to generate a smooth animation.
